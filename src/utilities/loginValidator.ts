@@ -1,4 +1,5 @@
-import Config from '../config.ts'
+const LOGIN_MIN = 3
+const LOGIN_MAX = 12
 
 interface ValidationError {
   isValid: boolean
@@ -7,14 +8,13 @@ interface ValidationError {
 
 function validateName(name: string): ValidationError {
   const testName = name.trim()
-  const conditions =
-    testName.length >= Config.loginMinLength && testName.length <= Config.loginMaxLength
+  const conditions = testName.length >= LOGIN_MIN && testName.length <= LOGIN_MAX
   let validationErrorText = ''
 
-  if (testName.length < Config.loginMinLength) {
-    validationErrorText = `Логин должен содержать минимум ${Config.loginMinLength} символа`
-  } else if (testName.length > Config.loginMaxLength) {
-    validationErrorText = `Логин должен содержать не более ${Config.loginMaxLength} символов`
+  if (testName.length < LOGIN_MIN) {
+    validationErrorText = `Логин должен содержать минимум ${LOGIN_MIN} символа`
+  } else if (testName.length > LOGIN_MAX) {
+    validationErrorText = `Логин должен содержать не более ${LOGIN_MAX} символов`
   }
 
   return {
