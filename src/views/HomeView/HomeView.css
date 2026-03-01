@@ -1,0 +1,67 @@
+.page-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 52px;
+  padding: 52px 20px 20px;
+  background-color: #e8e2d5;
+  background-image: url('/main-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.page-layout::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(232, 226, 213, 0.35);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.game-wrapper {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+}
+
+.svg-container {
+  flex: 1;
+  min-width: 320px;
+  background: #f5f0e6;
+  padding: 12px;
+  border: 3px solid #6b5344;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(107, 83, 68, 0.3),
+    4px 4px 0 rgba(0, 0, 0, 0.08);
+}
+
+.photo-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+  aspect-ratio: 800 / 516;
+  width: 100%;
+}
+
+.belaz-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  vertical-align: middle;
+}

@@ -1,0 +1,42 @@
+.app-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.app-input-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b5344;
+}
+
+.app-input {
+  padding: 10px 12px;
+  border: 2px solid #6b5344;
+  background: #faf6ee;
+  font-size: 14px;
+  color: #3d3229;
+  border-radius: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.app-input::placeholder {
+  color: #9a8b7a;
+}
+
+.app-input:hover:not(:disabled) {
+  border-color: #8b7355;
+}
+
+.app-input:focus {
+  outline: none;
+  border-color: #5a8c4a;
+  background: #fff;
+}
+
+.app-input:disabled {
+  background: #e0d9cc;
+  color: #9a8b7a;
+  cursor: not-allowed;
+}
