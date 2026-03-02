@@ -1,4 +1,6 @@
-# VueJS Tandem 
+# VueJS Tandem
+
+https://belaz-factory.netlify.app/
 
 ### Team members:
 
