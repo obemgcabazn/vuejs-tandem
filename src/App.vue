@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
+const router = useRouter()
+
+async function logout() {
+  await auth.logout()
+  router.push({ name: 'login' })
+}
 </script>
 
 <template>
@@ -8,6 +17,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <button v-if="auth.isAuthenticated" @click="logout">Logout</button>
       </nav>
     </div>
   </header>
