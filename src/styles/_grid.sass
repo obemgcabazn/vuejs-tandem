@@ -1,0 +1,153 @@
+@use "sass:map"
+@use "vars" as *
+// Подгружать переменные Брейкпоинтов из Variables
+
+// CONTAINERS
+$container-xs: $xs - map.get($grid-gutters, xs)
+$container-sm: $sm - map.get($grid-gutters, sm)
+$container-md: $md - map.get($grid-gutters, md)
+$container-lg: $lg - map.get($grid-gutters, lg)
+$container-xl: $xl - map.get($grid-gutters, xl)
+$container-xxl: $xxl - map.get($grid-gutters, xxl)
+
+$container-max-widths: ( "sm": $container-sm, "md": $container-md, "lg": $container-lg, "xl": $container-xl, "xxl": $container-xxl ) !default
+
+.container
+  width: 100%
+  margin-right: auto
+  margin-left: auto
+  @each $breakpoint, $width in $grid-breakpoints
+
+    @if $breakpoint != "xs"
+      @media ( min-width: #{$width} )
+        max-width: map.get($container-max-widths, #{$breakpoint})
+        padding-left: calc( #{map.get($grid-gutters, $breakpoint)} / 2 )
+        padding-right: calc( #{map.get($grid-gutters, $breakpoint)} / 2 )
+    @else
+      max-width: map.get($container-max-widths, #{$breakpoint})
+      padding-left: calc( #{map.get($grid-gutters, $breakpoint)} / 2 )
+      padding-right: calc( #{map.get($grid-gutters, $breakpoint)} / 2 )
+
+@each $breakpoint, $width in $grid-breakpoints
+  @if $breakpoint != "xs"
+    .container-#{$breakpoint}
+      width: 100%
+      margin-right: auto
+      margin-left: auto
+      @media ( min-width: #{$width} )
+        max-width: map.get($container-max-widths, #{$breakpoint})
+
+.row
+  display: -ms-flexbox
+  display: flex
+  -ms-flex-wrap: wrap
+  flex-wrap: wrap
+
+  @each $breakpoint, $width in $grid-breakpoints
+    @if $breakpoint != "xs"
+      @media ( min-width: #{$width} )
+        margin-left: calc( -#{map.get($grid-gutters, $breakpoint)} / 2 )
+        margin-right: calc( -#{map.get($grid-gutters, $breakpoint)} / 2 )
+    @else
+      margin-left: calc( -#{map.get($grid-gutters, $breakpoint)} / 2 )
+      margin-right: calc( -#{map.get($grid-gutters, $breakpoint)} / 2 )
+
+// Колонки
+.col
+  flex: 1 0 0
+  @each $breakpoint, $width in $grid-breakpoints
+
+    @if $breakpoint != "xs"
+
+      @for $i from 1 through 12
+        $suffix: "#{$breakpoint}-#{$i}"
+        &-#{$suffix}
+          @media (min-width: #{$width})
+            display: block
+            width: calc( #{$i} * 100% / 12)
+
+    @else // для классов .col-*
+
+      @for $i from 1 through 12
+        &-#{$i}
+          width: calc( 100% * #{$i} / 12 )
+
+[class^="col-"],
+[class*="col-"]
+  display: block
+  @each $breakpoint, $width in $grid-breakpoints
+    @media (min-width: #{$width})
+      padding-left: calc( #{ "#{map.get($grid-gutters, $breakpoint)} / 2"})
+      padding-right: calc( #{ "#{map.get($grid-gutters, $breakpoint)} / 2"})
+
+@each $breakpoint, $width in $grid-breakpoints
+  @if $breakpoint != "xs"
+
+    .g-#{$breakpoint}-0
+      @media (min-width: #{$width})
+        margin-right: 0
+        margin-left: 0
+
+      > .col,
+      > [class*="col-"]
+        @media (min-width: #{$width})
+          padding-right: 0
+          padding-left: 0
+
+    .g-#{$breakpoint}
+      @media (min-width: #{$width})
+        margin-right: calc( -#{map.get($grid-gutters, $breakpoint)} / 2)
+        margin-left: calc( -#{map.get($grid-gutters, $breakpoint)} / 2)
+
+      > .col,
+      > [class*="col-"]
+        @media (min-width: #{$width})
+          padding-right: calc( #{map.get($grid-gutters, $breakpoint)} / 2)
+          padding-left: calc( #{map.get($grid-gutters, $breakpoint)} / 2)
+
+  @else
+
+    .row
+      &.no-gutters,
+      &.g-0
+        margin-right: 0
+        margin-left: 0
+
+        > .col,
+        > [class*="col-"]
+          padding-right: 0
+          padding-left: 0
+
+// offsets - ОТСТУПЫ
+@each $breakpoint, $width in $grid-breakpoints
+  @if $breakpoint != "xs"
+
+    .offset-#{$breakpoint}-0
+      @media (min-width: #{$width})
+        margin-left: 0
+
+    @for $i from 1 through 11
+      .offset-#{$breakpoint}-#{$i}
+        @media (min-width: #{$width})
+          margin-left: calc( #{$i} * 100% / 12)
+
+  @else
+
+    @for $i from 1 through 11
+      .offset-#{$i}
+        margin-left: calc( #{$i} * 100% / 12)
+
+
+@each $breakpoint, $width in $grid-breakpoints
+  @if $breakpoint != "xs"
+
+    .col-#{$breakpoint}-five
+      @media (min-width: #{$width})
+        flex: 0 0 20%
+        max-width: 20%
+
+  @else
+    .col-five
+      flex: 0 0 20%
+      max-width: 20%
+
