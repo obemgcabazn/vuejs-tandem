@@ -10,13 +10,14 @@ const router = useRouter()
 
 const email = ref('')
 const password = ref('')
+const name = ref('')
 const mode = ref<'login' | 'register'>('login')
 
 async function submit() {
   if (mode.value === 'login') {
     await auth.login(email.value, password.value)
   } else {
-    await auth.register(email.value, password.value)
+    await auth.register(email.value, name.value, password.value)
   }
   if (auth.isAuthenticated) {
     router.push('/')
@@ -28,6 +29,7 @@ async function submit() {
   <div class="container">
     <div class="login-layout">
       <h1>{{ mode === 'login' ? 'Вход' : 'Регистрация' }}</h1>
+      <AppInput v-model="name" v-if="mode === 'register'" label="Name" type="text" id="name" />
       <AppInput v-model="email" label="Email" type="email" id="email" />
       <AppInput v-model="password" label="Пароль" type="password" id="password" />
       <p v-if="auth.error" class="error-text">{{ auth.error }}</p>
