@@ -1,5 +1,5 @@
 import type { GameState, ZonesMap } from '@/types'
-import { TOTAL_ZONES } from '@/types'
+import { TOTAL_ZONES, MAX_VASILKI, MAX_ERRORS } from '@/types'
 import { createInitialGameState, zoneCanBeClicked } from './gameState'
 import { allZonesCompleted } from './zones'
 
@@ -48,4 +48,14 @@ export function applyCloseConveyor(prev: GameState): GameState {
 
 export function applyHideOverlay(prev: GameState): GameState {
   return { ...prev, overlayHidden: true }
+}
+
+export function applyAddVasilki(prev: GameState): GameState {
+  const next = Math.min(prev.vasilkiCount + 1, MAX_VASILKI)
+  return { ...prev, vasilkiCount: next }
+}
+
+export function applyAddError(prev: GameState): GameState {
+  const next = Math.min(prev.errorCount + 1, MAX_ERRORS)
+  return { ...prev, errorCount: next }
 }
