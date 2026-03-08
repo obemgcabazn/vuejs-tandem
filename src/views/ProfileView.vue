@@ -47,7 +47,7 @@ onMounted(async () => {
   <main class="profile">
     <h1 class="profile__title">Profile</h1>
 
-    <p v-if="loading" class="profile__loading">Загрузка...</p>
+    <p v-if="loading" class="profile__loading">Loading...</p>
 
     <p v-else-if="error" class="profile__error">{{ error }}</p>
 
