@@ -1,17 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
-type User = {
-  name?: string
-  email: string
-  password?: string
-}
+import type { User } from '@/types/types.ts'
 
 type TokenResp = {
   data: {
     accessToken: string
     refreshToken: string
-    expiresIn: string
+    expiresIn: number
   }
   timestamp: string
 }
@@ -52,6 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       const respObj = await response.json()
+      console.log(respObj)
       setToken(respObj)
       user.value = userData
       localStorage.setItem('user', JSON.stringify(userData))
@@ -61,6 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
       loading.value = false
     }
   }
+
   async function register(email: string, name: string, password: string) {
     loading.value = true
     error.value = null
@@ -104,18 +101,43 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function refreshTokens(): Promise<boolean> {
+    const refreshToken = localStorage.getItem('refresh-token')
+    if (!refreshToken) return false
+
+    const url: string = import.meta.env.VITE_API_URL + '/auth/refresh'
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      })
+
+      if (!response.ok) return false
+
+      const respObj: TokenResp = await response.json()
+      setToken(respObj)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   function logout() {
     localStorage.removeItem('user')
+    localStorage.removeItem('access-token')
+    localStorage.removeItem('refresh-token')
+    localStorage.removeItem('token-expires-at')
     user.value = null
   }
 
-  return { user, loading, error, isAuthenticated, login, logout, register }
+  return { user, loading, error, isAuthenticated, login, logout, register, refreshTokens }
 })
 
 function setToken(tokenObj: TokenResp) {
-  console.log(tokenObj)
   const { accessToken, refreshToken, expiresIn } = tokenObj.data
   localStorage.setItem('access-token', accessToken)
   localStorage.setItem('refresh-token', refreshToken)
-  localStorage.setItem('expires', expiresIn)
+  localStorage.setItem('token-expires-at', String(Date.now() + expiresIn * 1000))
 }

@@ -40,3 +40,13 @@
   color: #9a8b7a;
   cursor: not-allowed;
 }
+
+.app-input--error {
+  border-color: #c0392b;
+}
+
+.app-input-error {
+  font-size: 12px;
+  color: #c0392b;
+  margin: 0;
+}

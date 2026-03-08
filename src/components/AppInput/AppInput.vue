@@ -6,10 +6,12 @@ defineProps<{
   placeholder?: string
   disabled?: boolean
   id?: string
+  error?: string
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  blur: []
 }>()
 
 function onInput(event: Event) {
@@ -29,9 +31,11 @@ function onInput(event: Event) {
       :type="type ?? 'text'"
       :placeholder="placeholder"
       :disabled="disabled"
-      class="app-input"
+      :class="['app-input', { 'app-input--error': error }]"
       @input="onInput"
+      @blur="emit('blur')"
     />
+    <p v-if="error" class="app-input-error">{{ error }}</p>
   </div>
 </template>
 
