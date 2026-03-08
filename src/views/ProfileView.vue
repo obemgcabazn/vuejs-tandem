@@ -141,7 +141,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(107, 83, 68, 0.35);
   border-radius: 8px;
   padding: 1.5rem;
 }
