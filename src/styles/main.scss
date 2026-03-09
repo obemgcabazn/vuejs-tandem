@@ -4,8 +4,9 @@
 
 @font-face {
   font-family: 'SoyuzGrotesk';
-  src: url('/fonts/SoyuzGroteskBold.ttf') format('truetype'),
-  url('/fonts/Soyuz_Grotesk_Bold.otf') format('opentype');
+  src:
+    url('/fonts/SoyuzGroteskBold.ttf') format('truetype'),
+    url('/fonts/Soyuz_Grotesk_Bold.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

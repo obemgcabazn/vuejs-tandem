@@ -1,14 +1,13 @@
-@use "sass:map";
+@use 'sass:map';
 
 // THEME FONTS
-$heading-font: "Geist", sans-serif;
-$text-font: "Geist", sans-serif;
+$heading-font: 'Geist', sans-serif;
+$text-font: 'Geist', sans-serif;
 
 $light-weight: 200;
 $normal-weight: 400;
 $medium-weight: 500;
 $bold-weight: 600;
-
 
 $layout_dir: '/img/layout/';
 $logos_dir: '//img.electropompa.ru/logos/';
@@ -44,28 +43,60 @@ $xxl: 1500px;
 // $xxl: 1500px
 // $xxl-container: 1428px = 1464px - padding 18px * 2
 
-$grid-gutters: ( "xs": 20px, "sm": 24px, "md": 30px, "lg": 32px, "xl": 34px, "xxl": 36px ) !default;
+$grid-gutters: (
+  'xs': 20px,
+  'sm': 24px,
+  'md': 30px,
+  'lg': 32px,
+  'xl': 34px,
+  'xxl': 36px,
+) !default;
 
-$grid-breakpoints: ( "xs": 0, "sm": $sm, "md": $md, "lg": $lg, "xl": $xl, "xxl": $xxl ) !default;
+$grid-breakpoints: (
+  'xs': 0,
+  'sm': $sm,
+  'md': $md,
+  'lg': $lg,
+  'xl': $xl,
+  'xxl': $xxl,
+) !default;
 
 // ОТСТУПЫ
 $spacer: 1rem !default;
 $spacers: () !default;
-$spacers: map.merge( ( 0: 0, 1: ($spacer * .25), 2: ($spacer * .5), 3: $spacer, 4: ($spacer *  1.5), 5: ($spacer * 3)  ), $spacers );
+$spacers: map.merge(
+  (
+    0: 0,
+    1: (
+      $spacer * 0.25,
+    ),
+    2: (
+      $spacer * 0.5,
+    ),
+    3: $spacer,
+    4: (
+      $spacer * 1.5,
+    ),
+    5: (
+      $spacer * 3,
+    ),
+  ),
+  $spacers
+);
 
 // TRANSITIONS
-$transition: cubic-bezier(.35, 0, 0, 1.01);
+$transition: cubic-bezier(0.35, 0, 0, 1.01);
 
-@mixin block-gaps{
+@mixin block-gaps {
   margin-bottom: 30px;
-  @media(min-width: $xl){
-    margin-bottom: 55px
+  @media (min-width: $xl) {
+    margin-bottom: 55px;
   }
 }
 @mixin items-gaps {
   margin-bottom: 20px;
   @media (min-width: $xl) {
-    margin-bottom: 30px
+    margin-bottom: 30px;
   }
 }
 

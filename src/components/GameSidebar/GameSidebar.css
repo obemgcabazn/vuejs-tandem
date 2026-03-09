@@ -62,7 +62,9 @@
   object-fit: contain;
   opacity: 0.28;
   filter: brightness(0.4);
-  transition: opacity 0.25s ease, filter 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    filter 0.25s ease;
 }
 
 .vasilek-icon.active {
@@ -86,7 +88,9 @@
   line-height: 1;
   color: #9a8b7a;
   opacity: 0.5;
-  transition: color 0.25s ease, opacity 0.25s ease;
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease;
 }
 
 .error-icon.active {

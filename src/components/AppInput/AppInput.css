@@ -18,7 +18,9 @@
   font-size: 14px;
   color: #3d3229;
   border-radius: 0;
-  transition: border-color 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
 }
 
 .app-input::placeholder {
