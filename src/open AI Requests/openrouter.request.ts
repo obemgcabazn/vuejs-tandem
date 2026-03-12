@@ -21,7 +21,7 @@ export async function openrouterRequest(message: string) {
     ],
   })
 
-  return completion?.choices[0].message.content
+  return completion?.choices[0]?.message?.content
 }
 
 export function textRequest(question: string, userMessage: string) {
