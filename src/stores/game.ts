@@ -6,14 +6,35 @@ import { ru } from '@/locales'
 
 const t = ru
 
-const newZones: ZonesMap = {}
-for (let id = 1; id <= TOTAL_ZONES; id++) {
-  newZones[id] = {
-    id,
-    name: t.zones[id],
+const newZones: ZonesMap = {
+  1: {
+    id: 1,
+    name: t.zones[1],
     status: 'closed',
-  }
+  },
+  2: {
+    id: 2,
+    name: t.zones[2],
+    status: 'closed',
+  },
+  3: {
+    id: 3,
+    name: t.zones[3],
+    status: 'closed',
+  },
+  4: {
+    id: 4,
+    name: t.zones[4],
+    status: 'closed',
+  },
 }
+// for (let id = 1; id <= TOTAL_ZONES; id++) {
+//   newZones[id] = {
+//     id,
+//     name: t.zones[id],
+//     status: 'closed',
+//   }
+// }
 
 export const useGameStore = defineStore('game', () => {
   const zones = ref<ZonesMap>(newZones)
