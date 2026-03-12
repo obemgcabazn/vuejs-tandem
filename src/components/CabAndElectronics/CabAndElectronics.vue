@@ -2,8 +2,8 @@
   <h2 class="cab-and-electronics-title">Цех монтажа кабины и электроники</h2>
 
   <QuestionTestComponent
-    v-if="testBlock"
-    :questionProperty="questionsForUser[currentQuestion]"
+    v-if="testBlock && currentQuestionData"
+    :questionProperty="currentQuestionData"
     @correctAnswer="addVasilki"
     @incorrectAnswer="addError"
   />
@@ -18,8 +18,7 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game'
-import { onMounted } from 'vue'
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import QuestionTestComponent from './questionTestComponent/questionTestComponent.vue'
 import CodeBlockComponent from './codeBlockComponent/codeBlockComponent.vue'
 import AiBlockComponent from './aiBlockComponent/aiBlockComponent.vue'
@@ -36,6 +35,7 @@ const aiBlock = ref<boolean>(false)
 const gameStore = useGameStore()
 const questionsForUser = randomQuestions(3, questions)
 const currentQuestion = ref(0)
+const currentQuestionData = computed(() => questionsForUser[currentQuestion.value])
 const isGameFinished = ref<boolean>(false)
 const emit = defineEmits<{
   (e: 'CabAndElectronicsFinished'): void

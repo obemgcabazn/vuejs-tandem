@@ -47,9 +47,10 @@ async function checkAnswer() {
   const aiRequest = textRequest(question.value, answer.value)
   const AI_Answer = await openrouterRequest(aiRequest)
 
-  AiAnswer.value = AI_Answer
-  console.log(AiAnswer.value)
-  if (AI_Answer.split(' ')[AI_Answer.split(' ').length - 1].toLowerCase() === 'true') {
+  if (AI_Answer) {
+    AiAnswer.value = AI_Answer
+  }
+  if (AI_Answer?.split(' ')[AI_Answer?.split(' ').length - 1]?.toLowerCase() === 'true') {
     answerCheckSuccess.value = true
     answerCheckMessage.value = 'Верно!'
     setTimeout(() => {
