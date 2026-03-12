@@ -10,7 +10,7 @@ const newZones: ZonesMap = {}
 for (let id = 1; id <= TOTAL_ZONES; id++) {
   newZones[id] = {
     id,
-    name: t.zones[id] ?? '',
+    name: t.zones[id],
     status: 'closed',
   }
 }
