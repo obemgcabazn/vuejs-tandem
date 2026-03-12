@@ -51,6 +51,13 @@ export const ZONE_PATHS: ZonePath[] = [
   },
 ]
 
+export interface Question {
+  id: number
+  question: string
+  variants: Array<string>
+  correct: string
+}
+
 export const TOTAL_ZONES = 4
 export const MAX_VASILKI = 5
 export const MAX_ERRORS = 2

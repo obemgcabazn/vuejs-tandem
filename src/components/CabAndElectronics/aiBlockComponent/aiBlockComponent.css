@@ -1,15 +1,4 @@
-.cab-and-electronics-title {
-  margin: 0 0 16px;
-  padding-bottom: 8px;
-  color: #3d3229;
-  font-size: 20px;
-  font-weight: 700;
-  border-bottom: 2px solid #8b7355;
-  letter-spacing: 0.02em;
-  text-align: center;
-}
-.test-block-text,
-.code-block-text {
+.ai-block-text {
   font-size: 16px;
   font-weight: 400;
   color: 2px solid #8b7355;
@@ -17,14 +6,14 @@
   margin-bottom: 16px;
 }
 
-.code-block-input {
+.ai-block-input {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
 }
-.code-block-task {
+.ai-block-question {
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
@@ -32,11 +21,11 @@
   text-align: center;
   margin-bottom: 16px;
 }
-.code-block-task-parts {
+.ai-block-task-parts {
   color: #000000;
   font-weight: 700;
 }
-.code-block-input textarea {
+.ai-block-answer-input {
   width: calc(100% - 24px);
   height: 250px;
   outline: none;
@@ -48,19 +37,19 @@
   color: #3d3229;
 }
 
-.code-check-ok {
+.ai-check-ok {
   margin: 8px 0 0;
   color: #2d5016;
   font-weight: 600;
 }
 
-.code-check-error {
+.ai-check-error {
   margin: 8px 0 0;
   color: #b71c1c;
   font-weight: 500;
 }
 
-.code-block-button {
+.ai-block-answer-button {
   width: 100%;
   padding: 12px 16px;
   margin-top: 10px;

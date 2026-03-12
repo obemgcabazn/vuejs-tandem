@@ -1,86 +1,104 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { GameState, ZonesMap } from '@/types'
-import { createInitialGameState } from '@/utils/gameState'
-import {
-  applyStart,
-  applyZoneInProgress,
-  applyZoneCompleted,
-  applyReset,
-  applyCloseConveyor,
-  applyHideOverlay,
-  applyAddVasilki,
-  applyAddError,
-} from '@/utils/gameActions'
+import type { ZonesMap } from '@/types'
+import { TOTAL_ZONES, MAX_VASILKI, MAX_ERRORS } from '@/types'
+import { ru } from '@/locales'
+
+const t = ru
+
+const newZones: ZonesMap = {}
+for (let id = 1; id <= TOTAL_ZONES; id++) {
+  newZones[id] = {
+    id,
+    name: t.zones[id] ?? '',
+    status: 'closed',
+  }
+}
 
 export const useGameStore = defineStore('game', () => {
-  const zones = ref<ZonesMap>({})
+  const zones = ref<ZonesMap>(newZones)
   const currentZoneId = ref<number | null>(null)
   const conveyorModalShown = ref(false)
-  const vasilkiCount = ref(2)
-  const errorCount = ref(1)
+  const vasilkiCount = ref(0)
+  const errorCount = ref(0)
   const overlayHidden = ref(false)
-
   const isInitialized = ref(false)
 
-  function getState(): GameState {
-    return {
-      zones: zones.value,
-      currentZoneId: currentZoneId.value,
-      conveyorModalShown: conveyorModalShown.value,
-      vasilkiCount: vasilkiCount.value,
-      errorCount: errorCount.value,
-      overlayHidden: overlayHidden.value,
+  function startAssembly() {
+    const z1 = zones.value[1]
+    if (z1) {
+      zones.value = { ...zones.value, 1: { ...z1, status: 'available' } }
     }
   }
 
-  function setState(state: GameState) {
-    zones.value = state.zones
-    currentZoneId.value = state.currentZoneId
-    conveyorModalShown.value = state.conveyorModalShown
-    vasilkiCount.value = state.vasilkiCount
-    errorCount.value = state.errorCount
-    overlayHidden.value = state.overlayHidden
-  }
-
-  function init(zoneNames: Record<number, string>) {
-    setState(createInitialGameState(zoneNames))
-    isInitialized.value = true
-  }
-
-  function startAssembly() {
-    setState(applyStart(getState()))
-  }
-
   function setZoneInProgress(zoneId: number): boolean {
-    const next = applyZoneInProgress(getState(), zoneId)
-    if (!next) return false
-    setState(next)
+    const zone = zones.value[zoneId]
+    if (!zone || zone.status !== 'available') return false
+    zones.value = { ...zones.value, [zoneId]: { ...zone, status: 'in-progress' } }
+    currentZoneId.value = zoneId
     return true
   }
 
   function setZoneCompleted(zoneId: number) {
-    setState(applyZoneCompleted(getState(), zoneId))
+    const zone = zones.value[zoneId]
+    if (!zone) return
+    zones.value = { ...zones.value, [zoneId]: { ...zone, status: 'completed' } }
+    if (zoneId < TOTAL_ZONES) {
+      const nextZone = zones.value[zoneId + 1]
+      if (nextZone) {
+        zones.value = {
+          ...zones.value,
+          [zoneId + 1]: { ...nextZone, status: 'available' },
+        }
+      }
+    }
+    currentZoneId.value = null
+    for (let id = 1; id <= TOTAL_ZONES; id++) {
+      const z = zones.value[id]
+      if (!z || z.status !== 'completed') return
+    }
+    conveyorModalShown.value = true
   }
 
   function reset(zoneNames: Record<number, string>) {
-    setState(applyReset(zoneNames))
+    const newZones: ZonesMap = {}
+    for (let id = 1; id <= TOTAL_ZONES; id++) {
+      newZones[id] = {
+        id,
+        name: zoneNames[id] ?? '',
+        status: 'closed',
+      }
+    }
+    zones.value = newZones
+    currentZoneId.value = null
+    conveyorModalShown.value = false
+    vasilkiCount.value = 0
+    errorCount.value = 0
+    overlayHidden.value = false
   }
 
   function closeConveyor() {
-    setState(applyCloseConveyor(getState()))
+    conveyorModalShown.value = false
   }
 
   function hideOverlay() {
-    setState(applyHideOverlay(getState()))
+    overlayHidden.value = true
   }
 
   function addVasilki() {
-    setState(applyAddVasilki(getState()))
+    vasilkiCount.value = Math.min(vasilkiCount.value + 1, MAX_VASILKI)
   }
 
   function addError() {
-    setState(applyAddError(getState()))
+    errorCount.value = Math.min(errorCount.value + 1, MAX_ERRORS)
+  }
+
+  function resetVasilki() {
+    vasilkiCount.value = 0
+  }
+
+  function resetError() {
+    errorCount.value = 0
   }
 
   const conveyorModalOpen = computed(() => conveyorModalShown.value)
@@ -94,7 +112,7 @@ export const useGameStore = defineStore('game', () => {
     overlayHidden,
     isInitialized,
     conveyorModalOpen,
-    init,
+    // init,
     startAssembly,
     setZoneInProgress,
     setZoneCompleted,
@@ -103,5 +121,7 @@ export const useGameStore = defineStore('game', () => {
     hideOverlay,
     addVasilki,
     addError,
+    resetVasilki,
+    resetError,
   }
 })
