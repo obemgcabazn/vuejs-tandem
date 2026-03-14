@@ -54,3 +54,12 @@ export const ZONE_PATHS: ZonePath[] = [
 export const TOTAL_ZONES = 4
 export const MAX_VASILKI = 5
 export const MAX_ERRORS = 2
+
+export type User = {
+  email: string
+  name?: string
+  password?: string
+  role?: 'user'
+  createdAt?: string
+  id?: string
+}
