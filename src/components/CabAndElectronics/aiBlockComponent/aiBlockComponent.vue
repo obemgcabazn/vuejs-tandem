@@ -23,7 +23,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { openrouterRequest } from '@/open AI Requests/openrouter.request'
+import { groqRequest } from '@/open AI Requests/openrouter.request'
+// import { openrouterRequest } from '@/open AI Requests/openrouter.request'
 import { textRequest } from '@/open AI Requests/openrouter.request'
 defineOptions({
   name: 'AiBlockComponent',
@@ -45,8 +46,9 @@ async function checkAnswer() {
     return
   }
   const aiRequest = textRequest(question.value, answer.value)
-  const AI_Answer = await openrouterRequest(aiRequest)
-
+  // const AI_Answer = await openrouterRequest(aiRequest)
+  const AI_Answer = await groqRequest(aiRequest)
+  console.log(AI_Answer)
   if (AI_Answer) {
     AiAnswer.value = AI_Answer
   }
