@@ -72,7 +72,7 @@ export type User = {
 }
 
 export interface ITaskResponse {
-  description
+  description: string
   difficulty: string
   id: string
   options: string[]

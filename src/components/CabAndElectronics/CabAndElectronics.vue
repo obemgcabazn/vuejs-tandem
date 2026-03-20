@@ -26,6 +26,7 @@
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game'
 import { computed, onMounted, ref } from 'vue'
+import type { ITaskResponse } from '@/types/types'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
 import QuestionTestComponent from './questionTestComponent/questionTestComponent.vue'
 import CodeBlockComponent from './codeBlockComponent/codeBlockComponent.vue'
@@ -74,6 +75,14 @@ onMounted(async () => {
 function nextTask() {
   codeBlock.value = false
   aiBlock.value = true
+}
+
+function startMiniGame() {
+  isGameFinished.value = false
+  testBlock.value = true
+  codeBlock.value = false
+  aiBlock.value = false
+  currentQuestion.value = 0
 }
 
 function nextQuestion() {

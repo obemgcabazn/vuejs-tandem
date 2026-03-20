@@ -1,14 +1,20 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import QuestionTestComponent from '@/components/CabAndElectronics/questionTestComponent/questionTestComponent.vue'
-import type { Question } from '@/types/types'
+import type { ITaskResponse } from '@/types/types'
 
 describe('QuestionTestComponent', () => {
-  const baseQuestion: Question = {
-    id: 1,
-    question: 'Какой правильный ответ?',
-    variants: ['A', 'B', 'C'],
-    correct: 'B',
+  const baseQuestion: ITaskResponse = {
+    id: '1',
+    description: 'Описание вопроса',
+    title: 'Какой правильный ответ?',
+    options: ['A', 'B', 'C'],
+    difficulty: 'easy',
+    order: 1,
+    topicId: 'topic-1',
+    type: 'single-choice',
+    userSubmission: null,
+    xpReward: 1,
   }
 
   it('отображает текст вопроса и варианты', () => {
@@ -18,8 +24,8 @@ describe('QuestionTestComponent', () => {
       },
     })
 
-    expect(wrapper.text()).toContain(baseQuestion.question)
-    baseQuestion.variants.forEach((variant) => {
+    expect(wrapper.text()).toContain(baseQuestion.title)
+    baseQuestion.options.forEach((variant) => {
       expect(wrapper.text()).toContain(variant)
     })
   })
@@ -33,7 +39,7 @@ describe('QuestionTestComponent', () => {
       },
     })
 
-    const correctIndex = baseQuestion.variants.indexOf(baseQuestion.correct)
+    const correctIndex = baseQuestion.options.indexOf('B')
     expect(correctIndex).toBeGreaterThanOrEqual(0)
     const variantNodes = wrapper.findAll('.variant-text')
     const correctNode = variantNodes[correctIndex]
@@ -62,7 +68,7 @@ describe('QuestionTestComponent', () => {
       },
     })
 
-    const wrongIndex = baseQuestion.variants.findIndex((v) => v !== baseQuestion.correct)
+    const wrongIndex = baseQuestion.options.findIndex((v) => v !== 'B')
     expect(wrongIndex).toBeGreaterThanOrEqual(0)
     const variantNodes = wrapper.findAll('.variant-text')
     const wrongNode = variantNodes[wrongIndex]

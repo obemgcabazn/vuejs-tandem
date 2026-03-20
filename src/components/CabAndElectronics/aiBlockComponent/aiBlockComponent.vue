@@ -130,7 +130,10 @@ onMounted(async () => {
     const data = await response.json()
     const tasks: ITaskResponse[] = data.data ?? []
     if (tasks.length > 0) {
-      currentTask.value = tasks[Math.floor(Math.random() * tasks.length)]
+      const randomTask = tasks[Math.floor(Math.random() * tasks.length)]
+      if (randomTask) {
+        currentTask.value = randomTask
+      }
     }
   } catch (error) {
     console.error('Ошибка при загрузке задания:', error)
