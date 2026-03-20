@@ -1,7 +1,27 @@
-import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
 import QuestionTestComponent from '@/components/CabAndElectronics/questionTestComponent/questionTestComponent.vue'
 import type { ITaskResponse } from '@/types/types'
+
+const { setVasilkiMock, setErrorMock, postToJudgeUsersAnswerMock, postToJudgeForHintMock } =
+  vi.hoisted(() => ({
+    setVasilkiMock: vi.fn(),
+    setErrorMock: vi.fn(),
+    postToJudgeUsersAnswerMock: vi.fn(),
+    postToJudgeForHintMock: vi.fn(),
+  }))
+
+vi.mock('@/stores/game', () => ({
+  useGameStore: () => ({
+    setVasilki: setVasilkiMock,
+    setError: setErrorMock,
+  }),
+}))
+
+vi.mock('@/api/requests', () => ({
+  postToJudgeUsersAnswer: postToJudgeUsersAnswerMock,
+  postToJudgeForHint: postToJudgeForHintMock,
+}))
 
 describe('QuestionTestComponent', () => {
   const baseQuestion: ITaskResponse = {
@@ -17,6 +37,22 @@ describe('QuestionTestComponent', () => {
     xpReward: 1,
   }
 
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('показывает ошибку, если ответ не выбран', async () => {
+    const wrapper = mount(QuestionTestComponent, {
+      props: {
+        questionProperty: baseQuestion,
+      },
+    })
+
+    await wrapper.find('button').trigger('click')
+    expect(wrapper.text()).toContain('Выберите вариант ответа')
+    expect(postToJudgeUsersAnswerMock).not.toHaveBeenCalled()
+  })
+
   it('отображает текст вопроса и варианты', () => {
     const wrapper = mount(QuestionTestComponent, {
       props: {
@@ -30,8 +66,17 @@ describe('QuestionTestComponent', () => {
     })
   })
 
-  it('эмитит correctAnswer при выборе правильного ответа', async () => {
-    vi.useFakeTimers()
+  it('показывает успех после успешной проверки', async () => {
+    postToJudgeUsersAnswerMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        data: {
+          score: 100,
+          feedback: 'Верно!',
+          zoneProgress: { vasilkiCount: 2, errorCount: 0 },
+        },
+      }),
+    })
 
     const wrapper = mount(QuestionTestComponent, {
       props: {
@@ -39,45 +84,47 @@ describe('QuestionTestComponent', () => {
       },
     })
 
-    const correctIndex = baseQuestion.options.indexOf('B')
-    expect(correctIndex).toBeGreaterThanOrEqual(0)
     const variantNodes = wrapper.findAll('.variant-text')
-    const correctNode = variantNodes[correctIndex]
-    expect(correctNode).toBeDefined()
-    await correctNode!.trigger('click')
-
+    await variantNodes[1]!.trigger('click')
     await wrapper.find('button').trigger('click')
+    await flushPromises()
 
-    // сразу после клика должен появиться текст "Верно!"
     expect(wrapper.text()).toContain('Верно!')
-
-    // событие correctAnswer эмитится через setTimeout
-    await vi.runAllTimersAsync()
-
-    expect(wrapper.emitted('correctAnswer')).toBeTruthy()
-    // сообщение должно очиститься после таймера
-    expect(wrapper.text()).not.toContain('Верно!')
-
-    vi.useRealTimers()
+    expect(setVasilkiMock).toHaveBeenCalledWith(2)
   })
 
-  it('эмитит incorrectAnswer при выборе неправильного ответа', async () => {
+  it('показывает подсказку при неверном ответе', async () => {
+    postToJudgeUsersAnswerMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        data: {
+          score: 10,
+          feedback: 'Неверно!',
+          zoneProgress: { vasilkiCount: 0, errorCount: 1 },
+        },
+      }),
+    })
+    postToJudgeForHintMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        data: {
+          hint: 'Подумай о let и const',
+        },
+      }),
+    })
+
     const wrapper = mount(QuestionTestComponent, {
       props: {
         questionProperty: baseQuestion,
       },
     })
 
-    const wrongIndex = baseQuestion.options.findIndex((v) => v !== 'B')
-    expect(wrongIndex).toBeGreaterThanOrEqual(0)
     const variantNodes = wrapper.findAll('.variant-text')
-    const wrongNode = variantNodes[wrongIndex]
-    expect(wrongNode).toBeDefined()
-    await wrongNode!.trigger('click')
-
+    await variantNodes[0]!.trigger('click')
     await wrapper.find('button').trigger('click')
+    await flushPromises()
 
-    expect(wrapper.text()).toContain('Неверно!')
-    expect(wrapper.emitted('incorrectAnswer')).toBeTruthy()
+    expect(wrapper.text()).toContain('Подсказка:')
+    expect(setErrorMock).toHaveBeenCalledWith(1)
   })
 })
