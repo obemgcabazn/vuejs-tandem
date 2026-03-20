@@ -9,11 +9,18 @@
       отсортированный в алфавитном порядке (по первой букве слова).
     </div>
     <div class="code-block-input">
-      <textarea
+      <Codemirror
+        v-model:value="code"
+        :options="codeMirrorOptions"
+        border
+        placeholder="Ваш код..."
+        :height="200"
+      />
+      <!-- <textarea
         class="code-block-input-textarea"
         v-model="code"
-        placeholder="Назовите функцию filterAndSort"
-      />
+        placeholder="Ваш код..."
+      /> -->
       <p v-if="codeCheckMessage" :class="codeCheckSuccess ? 'code-check-ok' : 'code-check-error'">
         {{ codeCheckMessage }}
       </p>
@@ -38,7 +45,15 @@ const code = ref<string>('function filterAndSort(array) {\n  \n}')
 const codeCheckMessage = ref('')
 const codeCheckSuccess = ref(false)
 const gameStore = useGameStore()
-
+const codeMirrorOptions = ref({
+  mode: 'javascript',
+  theme: 'dracula',
+  lineNumbers: true,
+  lineWrapping: true,
+  indentUnit: 2,
+  tabSize: 2,
+  autofocus: true,
+})
 const emit = defineEmits<{
   (e: 'nextTask'): void
 }>()

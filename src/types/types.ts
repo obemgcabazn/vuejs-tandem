@@ -70,3 +70,21 @@ export type User = {
   createdAt?: string
   id?: string
 }
+
+export interface ITaskResponse {
+  description
+  difficulty: string
+  id: string
+  options: string[]
+  order: number
+  title: string
+  topicId: string
+  type: string
+  userSubmission: null
+  xpReward: number
+}
+
+export enum ETopics {
+  JavaScript_Fundamentals = '813f9901-ed98-4729-83b4-65270f8d8dd9',
+  TypeScript_Basics = 'ea1c22a4-64ca-41e3-b714-4f6002b582ec',
+}

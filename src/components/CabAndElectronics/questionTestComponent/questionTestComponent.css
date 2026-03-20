@@ -6,6 +6,14 @@ h1 {
   letter-spacing: 0.02em;
   text-align: center;
 }
+.question-description {
+  font-size: 16px;
+  font-weight: 400;
+  font-style: italic;
+  color: #3d3229;
+  text-align: center;
+  margin-bottom: 16px;
+}
 .question-text {
   font-size: 20px;
   font-weight: 700;
@@ -45,6 +53,7 @@ h1 {
 }
 button {
   width: 100%;
+  height: 46px;
   padding: 12px 16px;
   margin-top: 10px;
   border: 2px solid;
@@ -55,6 +64,10 @@ button {
   color: #2d5016;
   background: linear-gradient(180deg, #c8e6c9, #a5d6a7);
 
+
+  & > span.spinner {
+  margin: -3px auto 0 auto;
+  }
   &:hover {
     background: linear-gradient(180deg, #a5d6a7, #81c784);
   }
@@ -62,6 +75,12 @@ button {
     background: linear-gradient(180deg, #81c784, #5a8c4a);
   }
 }
+
+button[disabled] {  
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 
 .error-block {
   margin-top: 16px;

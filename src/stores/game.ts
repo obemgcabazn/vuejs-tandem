@@ -114,6 +114,12 @@ export const useGameStore = defineStore('game', () => {
     errorCount.value = Math.min(errorCount.value + 1, MAX_ERRORS)
   }
 
+  function setVasilki(value: number) {
+    vasilkiCount.value = value
+  }
+  function setError(value: number) {
+    errorCount.value = value
+  }
   function resetVasilki() {
     vasilkiCount.value = 0
   }
@@ -141,6 +147,8 @@ export const useGameStore = defineStore('game', () => {
     closeConveyor,
     hideOverlay,
     addVasilki,
+    setVasilki,
+    setError,
     addError,
     resetVasilki,
     resetError,
