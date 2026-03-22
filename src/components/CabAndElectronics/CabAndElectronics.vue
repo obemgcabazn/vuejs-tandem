@@ -46,6 +46,7 @@ type TCurrentBlock = 'test' | 'code' | 'ai'
 const testBlock = ref<boolean>(false)
 const codeBlock = ref<boolean>(false)
 const aiBlock = ref<boolean>(false)
+const codeTask = ref<ITask | null>(null)
 const gameStore = useGameStore()
 const isLoading = ref<boolean>(false)
 const tasks = ref<ITask[]>([])
@@ -64,8 +65,11 @@ onMounted(async () => {
   const JSTopic = topics.data.data.find((topic) => topic.title === 'JavaScript Fundamentals')
   if (JSTopic) {
     const tasksResponse = await getTasksByTopicId(JSTopic.id)
-    tasks.value = tasksResponse.data
-    questionsForUser.value = await randomQuestions(3, tasks.value)
+    const testTasks = tasksResponse.data.filter((task) => task.type === 'multiple_choice')
+    const codeTasks = tasksResponse.data.filter((task) => task.type === 'code')
+    tasks.value = testTasks ?? []
+    questionsForUser.value = randomQuestions(3, tasks.value)
+    codeTask.value = randomQuestions(1, codeTasks)[0] || null
     testBlock.value = true
   }
   isLoading.value = false

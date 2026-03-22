@@ -3,10 +3,8 @@
     <h2 class="code-block-text">Напишите код для установки кабины и получите 1 василёк</h2>
     <div class="code-block-task">
       Даны запчасти для установки кабины:<br />
-      <span class="code-block-task-parts"> {{ taskForCode }} </span> <br />
-      Ваша задача — написать функцию с именем <code>filterAndSort(array)</code>, которая примет
-      массив, отфильтрует и оставит элементы с количеством букв больше 5 и вернёт новый массив,
-      отсортированный в алфавитном порядке (по первой букве слова).
+      <span class="code-block-task-parts"> {{ codeTask?.title }} </span> <br />
+      {{ codeTask?.description }}
     </div>
     <div class="code-block-input">
       <Codemirror
@@ -35,16 +33,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { taskForCode } from '@/questions/questions'
+import { ref, onMounted } from 'vue'
+import { randomQuestions } from '@/helpers/randomQuestions'
 import { useGameStore } from '@/stores/game'
+import type { ITask } from '@/types/types'
+import { getAllTopics, getTasksByTopicId } from '@/api/requests'
+import { postToJudgeUsersAnswer } from '@/api/requests'
+import { postToJudgeForHint } from '@/api/requests'
 defineOptions({
   name: 'CodeBlockComponent',
 })
-const code = ref<string>('function filterAndSort(array) {\n  \n}')
+const isLoading = ref<boolean>(false)
+
+const code = ref<string>('function ... (...) {\n  \n}')
 const codeCheckMessage = ref('')
 const codeCheckSuccess = ref(false)
 const gameStore = useGameStore()
+const codeTask = ref<ITask | null>(null)
+const isCorrect = ref<boolean | null>(null)
 const codeMirrorOptions = ref({
   mode: 'javascript',
   theme: 'dracula',
@@ -54,52 +60,110 @@ const codeMirrorOptions = ref({
   tabSize: 2,
   autofocus: true,
 })
+
 const emit = defineEmits<{
   (e: 'nextTask'): void
 }>()
 
-/** Эталон: длина > 5, сортировка по первой букве */
-function getExpectedResult(array: string[]): string[] {
-  return [...array]
-    .filter((word) => word.length > 5)
-    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
-}
+onMounted(async () => {
+  isLoading.value = true
+  const topics = await getAllTopics()
+  const JSTopic = topics.data.data.find((topic) => topic.title === 'JavaScript Fundamentals')
+  if (JSTopic) {
+    const tasksResponse = await getTasksByTopicId(JSTopic.id)
+    const codeTasks = tasksResponse.data.filter((task) => task.type === 'code')
+    codeTask.value = randomQuestions(1, codeTasks)[0] ?? null
+  }
+  isLoading.value = false
+})
 
 function nextTask() {
   emit('nextTask')
 }
-function checkCode() {
+async function checkCode() {
   codeCheckMessage.value = ''
   codeCheckSuccess.value = false
   if (!code.value.trim()) {
     codeCheckMessage.value = 'Введите код функции.'
     return
   }
+  isLoading.value = true
+  codeCheckMessage.value = ''
+
   try {
-    const fn = new Function(
-      code.value + '; return typeof filterAndSort === "function" ? filterAndSort : null;',
-    )()
-    if (typeof fn !== 'function') {
-      codeCheckMessage.value = 'В коде должна быть объявлена функция с именем filterAndSort(arr).'
+    const response = await postToJudgeUsersAnswer({
+      taskId: codeTask.value?.id ?? '',
+      answer: code.value,
+    })
+
+    if (!response.ok) {
+      let errorMessage = 'Не удалось проверить ответ'
+
+      try {
+        const errorData = await response.json()
+        if (errorData?.message) {
+          errorMessage = errorData.message
+        }
+      } catch {
+        errorMessage = 'Некорректный формат ответа сервера'
+      }
+
+      isCorrect.value = false
+      codeCheckSuccess.value = false
+      codeCheckMessage.value = errorMessage
       return
     }
-    const result = fn([...taskForCode])
-    const expected = getExpectedResult(taskForCode)
-    if (!Array.isArray(result)) {
-      codeCheckMessage.value = 'Функция должна возвращать массив.'
-      return
+
+    const data = await response.json()
+    const result = data?.data
+    console.log(data)
+    if (!result) {
+      throw new Error('Некорректный формат ответа сервера')
     }
-    const expectedStr = JSON.stringify(expected)
-    const resultStr = JSON.stringify(result)
-    if (resultStr !== expectedStr) {
-      codeCheckMessage.value = `Ожидалось: [${expected.join(', ')}]. Получено: [${result.join(', ')}].`
-      return
+
+    const score = Number(result.score ?? 0)
+    const feedback = result.feedback ?? 'Ответ проверен'
+    const vasilkiCount = result.zoneProgress?.vasilkiCount
+    const errorCount = result.zoneProgress?.errorCount
+
+    if (score > 50) {
+      isCorrect.value = true
+      codeCheckSuccess.value = true
+      codeCheckMessage.value = feedback
+
+      if (typeof vasilkiCount === 'number') {
+        gameStore.setVasilki(vasilkiCount)
+      }
+    } else {
+      isCorrect.value = false
+      codeCheckSuccess.value = false
+
+      const hintResponse = await postToJudgeForHint({
+        taskId: codeTask.value?.id ?? '',
+        currentAnswer: code.value,
+      })
+      const hintData = await hintResponse.json()
+      const hint = hintData.data.hint
+      codeCheckMessage.value = `Ответ неверный! Подсказка: ${hint}`
+
+      console.log(hintData)
+
+      if (!hintResponse.ok) {
+        console.error('Не удалось получить подсказку')
+        return
+      }
+
+      if (typeof errorCount === 'number') {
+        gameStore.setError(errorCount)
+      }
     }
-    codeCheckSuccess.value = true
-    codeCheckMessage.value = 'Верно! Функция работает правильно.'
-    gameStore.addVasilki()
-  } catch (e) {
-    codeCheckMessage.value = `Ошибка: ${e instanceof Error ? e.message : String(e)}`
+  } catch (error) {
+    console.error('Ошибка при проверке ответа:', error)
+    isCorrect.value = false
+    codeCheckSuccess.value = false
+    codeCheckMessage.value = 'Ошибка сети или сервера. Попробуйте ещё раз.'
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
