@@ -1,7 +1,7 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import QuestionTestComponent from '@/components/CabAndElectronics/questionTestComponent/questionTestComponent.vue'
-import type { ITaskResponse } from '@/types/types'
+import type { ITask } from '@/types/types'
 
 const { setVasilkiMock, setErrorMock, postToJudgeUsersAnswerMock, postToJudgeForHintMock } =
   vi.hoisted(() => ({
@@ -24,7 +24,7 @@ vi.mock('@/api/requests', () => ({
 }))
 
 describe('QuestionTestComponent', () => {
-  const baseQuestion: ITaskResponse = {
+  const baseQuestion: ITask = {
     id: '1',
     description: 'Описание вопроса',
     title: 'Какой правильный ответ?',
