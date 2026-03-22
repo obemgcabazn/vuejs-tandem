@@ -26,16 +26,14 @@
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game'
 import { computed, onMounted, ref } from 'vue'
-import type { ITaskResponse } from '@/types/types'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
 import QuestionTestComponent from './questionTestComponent/questionTestComponent.vue'
 import CodeBlockComponent from './codeBlockComponent/codeBlockComponent.vue'
 import AiBlockComponent from './aiBlockComponent/aiBlockComponent.vue'
-
-import { apiEndpoints } from '@/api/endpoints'
-import { apiFetch } from '@/utils'
-
+import type { ITask } from '@/types/types'
+import { getAllTopics, getTasksByTopicId } from '@/api/requests'
 import { randomQuestions } from '@/helpers/randomQuestions'
+import quietEngineStartUrl from '@/sounds/quiet-engine-start.mp3'
 
 defineOptions({
   name: 'CabAndElectronics',
@@ -45,8 +43,8 @@ const codeBlock = ref<boolean>(false)
 const aiBlock = ref<boolean>(false)
 const gameStore = useGameStore()
 const isLoading = ref<boolean>(false)
-const tasks = ref<ITaskResponse[]>([])
-const questionsForUser = ref<ITaskResponse[]>([])
+const tasks = ref<ITask[]>([])
+const questionsForUser = ref<ITask[]>([])
 const currentQuestion = ref(0)
 const currentQuestionData = computed(() => questionsForUser.value[currentQuestion.value])
 const isGameFinished = ref<boolean>(false)
@@ -54,20 +52,14 @@ const emit = defineEmits<{
   (e: 'CabAndElectronicsFinished'): void
 }>()
 onMounted(async () => {
-  // testBlock.value = true
   isLoading.value = true
-  const response = await apiFetch(
-    import.meta.env.VITE_API_URL +
-      apiEndpoints.topics.getTasksByTopicId('813f9901-ed98-4729-83b4-65270f8d8dd9'),
-  )
-  if (response.ok) {
-    const data: { data?: ITaskResponse[] } = await response.json()
-    tasks.value = Array.isArray(data.data) ? data.data : []
-    console.log(data)
+  const topics = await getAllTopics()
+  const JSTopic = topics.data.data.find((topic) => topic.title === 'JavaScript Fundamentals')
+  if (JSTopic) {
+    const tasksResponse = await getTasksByTopicId(JSTopic.id)
+    tasks.value = tasksResponse.data
     questionsForUser.value = await randomQuestions(3, tasks.value)
     testBlock.value = true
-  } else {
-    console.error('Failed to fetch tasks')
   }
   isLoading.value = false
 })
@@ -94,16 +86,14 @@ function nextQuestion() {
   }
 }
 
-// function addVasilki() {
-//   gameStore.addVasilki()
-//   nextQuestion()
-// }
-
 function addError() {
   gameStore.addError()
 }
 
 function finishGame() {
+  const finishSound = new Audio(quietEngineStartUrl)
+  finishSound.play().catch(() => {})
+
   gameStore.addVasilki()
   testBlock.value = false
   codeBlock.value = false

@@ -24,11 +24,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ITaskResponse } from '@/types/types'
 import { useGameStore } from '@/stores/game'
 import { ref } from 'vue'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
-
+import type { ITask } from '@/types/types'
 import { postToJudgeUsersAnswer, postToJudgeForHint } from '@/api/requests'
 const isLoading = ref<boolean>(false)
 const selectedVariant = ref<string | null>(null)
@@ -41,7 +40,7 @@ defineOptions({
   name: 'QuestionTestComponent',
 })
 const props = defineProps<{
-  questionProperty: ITaskResponse
+  questionProperty: ITask
 }>()
 
 function selectVariant(variant: string) {
@@ -64,19 +63,6 @@ async function checkAnswer() {
       taskId: props.questionProperty.id,
       answer: selectedVariant.value,
     })
-    // const response = await apiFetch(
-    //   import.meta.env.VITE_API_URL + apiEndpoints.judgeUsersAnswer.postToJudgeUsersAnswer,
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       taskId: props.questionProperty.id,
-    //       answer: selectedVariant.value,
-    //     }),
-    //   },
-    // )
 
     if (!response.ok) {
       let errorMessage = 'Не удалось проверить ответ'

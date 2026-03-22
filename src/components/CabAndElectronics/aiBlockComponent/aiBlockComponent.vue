@@ -37,13 +37,17 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
-import type { ITaskResponse } from '@/types/types'
-import { ETopics } from '@/types/types'
+import type { ITask } from '@/types/types'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import { useGameStore } from '@/stores/game'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
-import { getTasksByTopicId, postToJudgeUsersAnswer, postToJudgeForHint } from '@/api/requests'
+import {
+  getAllTopics,
+  getTasksByTopicId,
+  postToJudgeUsersAnswer,
+  postToJudgeForHint,
+} from '@/api/requests'
 
 defineOptions({
   name: 'AiBlockComponent',
@@ -58,7 +62,7 @@ const gameStore = useGameStore()
 
 const isLoadingTask = ref(false)
 const isLoading = ref(false)
-const currentTask = ref<ITaskResponse | null>(null)
+const currentTask = ref<ITask | null>(null)
 const answer = ref('')
 const answerCheckMessage = ref('')
 const answerCheckSuccess = ref(false)
@@ -121,25 +125,16 @@ watch(
 
 onMounted(async () => {
   isLoadingTask.value = true
-  try {
-    const response = await getTasksByTopicId(ETopics.JavaScript_Fundamentals)
-    if (!response.ok) {
-      console.error('Не удалось загрузить задание')
-      return
+  const topics = await getAllTopics()
+  const JSTopic = topics.data.data.find((topic) => topic.title === 'JavaScript Fundamentals')
+  if (JSTopic) {
+    const tasksResponse = await getTasksByTopicId(JSTopic.id)
+    const randomTask = tasksResponse.data[Math.floor(Math.random() * tasksResponse.data.length)]
+    if (randomTask) {
+      currentTask.value = randomTask
     }
-    const data = await response.json()
-    const tasks: ITaskResponse[] = data.data ?? []
-    if (tasks.length > 0) {
-      const randomTask = tasks[Math.floor(Math.random() * tasks.length)]
-      if (randomTask) {
-        currentTask.value = randomTask
-      }
-    }
-  } catch (error) {
-    console.error('Ошибка при загрузке задания:', error)
-  } finally {
-    isLoadingTask.value = false
   }
+  isLoadingTask.value = false
 })
 
 onBeforeUnmount(() => {

@@ -72,6 +72,33 @@ export type User = {
 }
 
 export interface ITaskResponse {
+  timestamp: string
+  data: ITask[]
+}
+
+export interface ITopicResponse {
+  data: {
+    data: ITopicData[]
+    total: number
+    page: number
+    limit: number
+  }
+}
+
+export enum ETopics {
+  JavaScript_Fundamentals = 'JavaScript_Fundamentals',
+  TypeScript_Basics = 'TypeScript_Basics',
+}
+
+interface ITopicData {
+  id: string
+  title: string
+  description: string
+  order: number
+  tasksTotal: number
+  userProgress: number | null
+}
+export interface ITask {
   description: string
   difficulty: string
   id: string
@@ -82,9 +109,4 @@ export interface ITaskResponse {
   type: string
   userSubmission: null
   xpReward: number
-}
-
-export enum ETopics {
-  JavaScript_Fundamentals = '813f9901-ed98-4729-83b4-65270f8d8dd9',
-  TypeScript_Basics = 'ea1c22a4-64ca-41e3-b714-4f6002b582ec',
 }
