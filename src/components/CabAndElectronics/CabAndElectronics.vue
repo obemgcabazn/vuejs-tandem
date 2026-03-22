@@ -3,6 +3,7 @@
     Цех монтажа кабины и электроники
   </h2>
   <GearSpinner v-if="isLoading" :size="56" :isLabel="true" />
+  <MiniGameSnake v-if="miniGameSnake" @close="miniGameSnake = false" />
   <QuestionTestComponent
     v-if="testBlock && currentQuestionData"
     :questionProperty="currentQuestionData"
@@ -14,7 +15,9 @@
     <button @click="finishGame" style="width: 230px; background: rgb(236, 193, 51)">
       Завершить зону(для разработки)
     </button>
-    <button @click="startMiniGame">Начать мини-игру</button>
+    <button @click="startMiniGame">
+      {{ miniGameSnake ? 'Закрыть мини-игру' : 'Начать мини-игру' }}
+    </button>
   </div>
   <div v-if="isGameFinished">
     <h2 class="cab-and-electronics-title">
@@ -24,20 +27,22 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: 'CabAndElectronics',
+})
 import { useGameStore } from '@/stores/game'
 import { computed, onMounted, ref } from 'vue'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
 import QuestionTestComponent from './questionTestComponent/questionTestComponent.vue'
 import CodeBlockComponent from './codeBlockComponent/codeBlockComponent.vue'
 import AiBlockComponent from './aiBlockComponent/aiBlockComponent.vue'
+import MiniGameSnake from '../MiniGameSnake/MiniGameSnake.vue'
 import type { ITask } from '@/types/types'
 import { getAllTopics, getTasksByTopicId } from '@/api/requests'
 import { randomQuestions } from '@/helpers/randomQuestions'
 import quietEngineStartUrl from '@/sounds/quiet-engine-start.mp3'
 
-defineOptions({
-  name: 'CabAndElectronics',
-})
+type TCurrentBlock = 'test' | 'code' | 'ai'
 const testBlock = ref<boolean>(false)
 const codeBlock = ref<boolean>(false)
 const aiBlock = ref<boolean>(false)
@@ -48,6 +53,8 @@ const questionsForUser = ref<ITask[]>([])
 const currentQuestion = ref(0)
 const currentQuestionData = computed(() => questionsForUser.value[currentQuestion.value])
 const isGameFinished = ref<boolean>(false)
+const miniGameSnake = ref<boolean>(false)
+const currentBlock = ref<TCurrentBlock>('test')
 const emit = defineEmits<{
   (e: 'CabAndElectronicsFinished'): void
 }>()
@@ -67,14 +74,34 @@ onMounted(async () => {
 function nextTask() {
   codeBlock.value = false
   aiBlock.value = true
+  currentBlock.value = 'ai'
 }
 
 function startMiniGame() {
-  isGameFinished.value = false
-  testBlock.value = true
-  codeBlock.value = false
-  aiBlock.value = false
-  currentQuestion.value = 0
+  if (miniGameSnake.value) {
+    miniGameSnake.value = false
+    isGameFinished.value = false
+    switch (currentBlock.value) {
+      case 'test':
+        testBlock.value = true
+        break
+      case 'code':
+        codeBlock.value = true
+        break
+      case 'ai':
+        aiBlock.value = true
+        break
+
+      default:
+        break
+    }
+  } else {
+    isGameFinished.value = false
+    testBlock.value = false
+    codeBlock.value = false
+    aiBlock.value = false
+    miniGameSnake.value = true
+  }
 }
 
 function nextQuestion() {
@@ -83,6 +110,7 @@ function nextQuestion() {
   } else {
     testBlock.value = false
     codeBlock.value = true
+    currentBlock.value = 'code'
   }
 }
 
