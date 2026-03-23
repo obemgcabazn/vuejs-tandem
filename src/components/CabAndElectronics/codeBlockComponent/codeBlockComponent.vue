@@ -123,7 +123,7 @@ async function checkCode() {
 
     const score = Number(result.score ?? 0)
     const feedback = result.feedback ?? 'Ответ проверен'
-    const vasilkiCount = result.zoneProgress?.vasilkiCount
+    // const vasilkiCount = result.zoneProgress?.vasilkiCount
     const errorCount = result.zoneProgress?.errorCount
 
     if (score > 50) {
@@ -131,9 +131,10 @@ async function checkCode() {
       codeCheckSuccess.value = true
       codeCheckMessage.value = feedback
 
-      if (typeof vasilkiCount === 'number') {
-        gameStore.setVasilki(vasilkiCount)
-      }
+      // if (typeof vasilkiCount === 'number') {
+      //   gameStore.setVasilki(vasilkiCount)
+      // }
+      gameStore.addVasilki()
     } else {
       isCorrect.value = false
       codeCheckSuccess.value = false

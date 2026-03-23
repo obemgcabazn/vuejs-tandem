@@ -126,7 +126,8 @@ function finishGame() {
   const finishSound = new Audio(quietEngineStartUrl)
   finishSound.play().catch(() => {})
 
-  gameStore.addVasilki()
+  gameStore.setVasilki(0)
+  gameStore.setError(0)
   testBlock.value = false
   codeBlock.value = false
   aiBlock.value = false

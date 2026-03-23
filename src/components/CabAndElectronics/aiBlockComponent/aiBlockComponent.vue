@@ -182,14 +182,15 @@ async function checkAnswer() {
 
     const score = Number(result.score ?? 0)
     const feedback = result.feedback ?? 'Ответ проверен'
-    const vasilkiCount = result.zoneProgress?.vasilkiCount
+    // const vasilkiCount = result.zoneProgress?.vasilkiCount
     const errorCount = result.zoneProgress?.errorCount
     if (score > 50) {
       answerCheckSuccess.value = true
       answerCheckMessage.value = feedback
-      if (typeof vasilkiCount === 'number') {
-        gameStore.setVasilki(vasilkiCount)
-      }
+      gameStore.addVasilki()
+      // if (typeof vasilkiCount === 'number') {
+      //   gameStore.setVasilki(vasilkiCount)
+      // }
     } else {
       answerCheckSuccess.value = false
 

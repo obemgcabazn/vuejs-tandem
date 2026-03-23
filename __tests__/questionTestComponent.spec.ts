@@ -1,19 +1,26 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import QuestionTestComponent from '@/components/CabAndElectronics/questionTestComponent/questionTestComponent.vue'
-import type { ITask } from '@/types/types'
+import type { ITaskResponse } from '@/types/types'
 
-const { setVasilkiMock, setErrorMock, postToJudgeUsersAnswerMock, postToJudgeForHintMock } =
-  vi.hoisted(() => ({
-    setVasilkiMock: vi.fn(),
-    setErrorMock: vi.fn(),
-    postToJudgeUsersAnswerMock: vi.fn(),
-    postToJudgeForHintMock: vi.fn(),
-  }))
+const {
+  addVasilkiMock,
+  addErrorMock,
+  setErrorMock,
+  postToJudgeUsersAnswerMock,
+  postToJudgeForHintMock,
+} = vi.hoisted(() => ({
+  addVasilkiMock: vi.fn(),
+  addErrorMock: vi.fn(),
+  setErrorMock: vi.fn(),
+  postToJudgeUsersAnswerMock: vi.fn(),
+  postToJudgeForHintMock: vi.fn(),
+}))
 
 vi.mock('@/stores/game', () => ({
   useGameStore: () => ({
-    setVasilki: setVasilkiMock,
+    addVasilki: addVasilkiMock,
+    addError: addErrorMock,
     setError: setErrorMock,
   }),
 }))
@@ -24,7 +31,7 @@ vi.mock('@/api/requests', () => ({
 }))
 
 describe('QuestionTestComponent', () => {
-  const baseQuestion: ITask = {
+  const baseQuestion: ITaskResponse = {
     id: '1',
     description: 'Описание вопроса',
     title: 'Какой правильный ответ?',
@@ -90,7 +97,7 @@ describe('QuestionTestComponent', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Верно!')
-    expect(setVasilkiMock).toHaveBeenCalledWith(2)
+    expect(addVasilkiMock).toHaveBeenCalled()
   })
 
   it('показывает подсказку при неверном ответе', async () => {
