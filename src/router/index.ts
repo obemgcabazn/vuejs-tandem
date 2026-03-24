@@ -28,6 +28,12 @@ const router = createRouter({
       component: () => import('../views/ProfileView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/online-mini-game',
+      name: 'online-mini-game',
+      component: () => import('../views/OnlineMiniGameView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
