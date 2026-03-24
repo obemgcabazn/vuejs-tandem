@@ -51,6 +51,13 @@ export const ZONE_PATHS: ZonePath[] = [
   },
 ]
 
+export interface Question {
+  id: number
+  question: string
+  variants: Array<string>
+  correct: string
+}
+
 export const TOTAL_ZONES = 4
 export const MAX_VASILKI = 5
 export const MAX_ERRORS = 2
@@ -62,4 +69,44 @@ export type User = {
   role?: 'user'
   createdAt?: string
   id?: string
+}
+
+export interface ITaskResponse {
+  timestamp: string
+  data: ITask[]
+}
+
+export interface ITopicResponse {
+  data: {
+    data: ITopicData[]
+    total: number
+    page: number
+    limit: number
+  }
+}
+
+export enum ETopics {
+  JavaScript_Fundamentals = 'JavaScript_Fundamentals',
+  TypeScript_Basics = 'TypeScript_Basics',
+}
+
+interface ITopicData {
+  id: string
+  title: string
+  description: string
+  order: number
+  tasksTotal: number
+  userProgress: number | null
+}
+export interface ITask {
+  description: string
+  difficulty: string
+  id: string
+  options: string[]
+  order: number
+  title: string
+  topicId: string
+  type: string
+  userSubmission: null
+  xpReward: number
 }
