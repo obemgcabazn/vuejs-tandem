@@ -1,0 +1,71 @@
+.code-block-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: 2px solid #8b7355;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.code-block-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.code-block-task {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #3d3229;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.code-block-task-parts {
+  color: #000000;
+  font-weight: 700;
+}
+.code-block-input textarea {
+  width: calc(100% - 24px);
+  height: 250px;
+  outline: none;
+  padding: 10px;
+  border: 2px solid #8b7355;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #3d3229;
+  color:rgb(46, 0, 172);
+}
+
+.code-check-ok {
+  margin: 8px 0 0;
+  color: #2d5016;
+  font-weight: 600;
+}
+
+.code-check-error {
+  margin: 8px 0 0;
+  color: #b71c1c;
+  font-weight: 500;
+}
+
+.code-block-button {
+  width: 100%;
+  padding: 12px 16px;
+  margin-top: 10px;
+  border: 2px solid;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border-color: #5a8c4a;
+  color: #2d5016;
+  background: linear-gradient(180deg, #c8e6c9, #a5d6a7);
+
+  &:hover {
+    background: linear-gradient(180deg, #a5d6a7, #81c784);
+  }
+  &:active {
+    background: linear-gradient(180deg, #81c784, #5a8c4a);
+  }
+}

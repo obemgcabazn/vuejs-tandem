@@ -1,0 +1,80 @@
+@use "sass:map";
+
+// THEME FONTS
+$heading-font: "Geist", sans-serif;
+$text-font: "Geist", sans-serif;
+
+$light-weight: 200;
+$normal-weight: 400;
+$medium-weight: 500;
+$bold-weight: 600;
+
+
+$layout_dir: '/img/layout/';
+$logos_dir: '//img.electropompa.ru/logos/';
+
+// BREAKPOINTS
+$xs: 480px;
+$sm: 576px;
+$md: 768px;
+$lg: 1024px;
+$xl: 1400px;
+$xxl: 1500px;
+
+// до $sm
+// padding: 10px
+// width: 100%
+
+// $sm: 576px
+// $sm диапазон: 576px - 767px
+// $sm-container: 552px = 528px - padding 12px * 2
+
+// $md: 768px
+// $md диапазон: 768px - 1023px
+// $md-container: 708px = 738px - padding 15px * 2
+
+// $lg: 1024px
+// $lg диапазон: 1024px - 1399px
+// $lg-container: 960px = 992px - padding 16px * 2
+
+// $xl: 1400px
+// $xl диапазон: 1400px - 1499px
+// $xl-container: 1332px = 1366px - padding 17px * 2
+
+// $xxl: 1500px
+// $xxl-container: 1428px = 1464px - padding 18px * 2
+
+$grid-gutters: ( "xs": 20px, "sm": 24px, "md": 30px, "lg": 32px, "xl": 34px, "xxl": 36px ) !default;
+
+$grid-breakpoints: ( "xs": 0, "sm": $sm, "md": $md, "lg": $lg, "xl": $xl, "xxl": $xxl ) !default;
+
+// ОТСТУПЫ
+$spacer: 1rem !default;
+$spacers: () !default;
+$spacers: map.merge( ( 0: 0, 1: ($spacer * .25), 2: ($spacer * .5), 3: $spacer, 4: ($spacer *  1.5), 5: ($spacer * 3)  ), $spacers );
+
+// TRANSITIONS
+$transition: cubic-bezier(.35, 0, 0, 1.01);
+
+@mixin block-gaps{
+  margin-bottom: 30px;
+  @media(min-width: $xl){
+    margin-bottom: 55px
+  }
+}
+@mixin items-gaps {
+  margin-bottom: 20px;
+  @media (min-width: $xl) {
+    margin-bottom: 30px
+  }
+}
+
+$border-radius: 16px;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 40px;
