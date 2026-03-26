@@ -31,7 +31,7 @@ const router = createRouter({
     {
       path: '/online-mini-game',
       name: 'online-mini-game',
-      component: () => import('../views/OnlineMiniGameView.vue'),
+      component: () => import('../views/OnlineMiniGame/OnlineMiniGameView.vue'),
       meta: { requiresAuth: true },
     },
   ],

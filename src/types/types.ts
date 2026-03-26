@@ -91,7 +91,7 @@ export enum ETopics {
   TypeScript_Basics = 'TypeScript_Basics',
 }
 
-interface ITopicData {
+export interface ITopicData {
   id: string
   title: string
   description: string
@@ -103,7 +103,7 @@ export interface ITask {
   description: string
   difficulty: string
   id: string
-  options: string[]
+  options: string[] | null
   order: number
   title: string
   topicId: string
@@ -111,3 +111,32 @@ export interface ITask {
   userSubmission: null
   xpReward: number
 }
+
+// export interface Room {
+//   id: string
+//   hostId: string
+//   members: Map<string, RoomMember>
+//   isPrivate: boolean // NEW
+//   status: 'waiting' | 'in_progress' | 'finished'
+//   topicId: string | null
+//   currentTaskIndex: number
+//   createdAt: Date
+//   lastActivityAt: Date
+// }
+
+export interface IPublicRoomResponse {
+  data: IPublicRoomDto[]
+  timestamp: string
+}
+
+export interface IPublicRoomDto {
+  id: string
+  hostName: string
+  topicId: string | null
+  memberCount: number
+  maxMembers: 6
+  status: RoomStatus
+  createdAt: Date
+}
+
+export type RoomStatus = 'waiting' | 'in_progress' | 'finished'

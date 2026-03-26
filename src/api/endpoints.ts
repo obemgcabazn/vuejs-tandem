@@ -11,4 +11,7 @@ export const apiEndpoints = {
   users: {
     patchMe: '/users/me',
   },
+  game: {
+    getAllPublickRooms: `/rooms`,
+  },
 } as const
