@@ -68,7 +68,8 @@ describe('QuestionTestComponent', () => {
     })
 
     expect(wrapper.text()).toContain(baseQuestion.title)
-    baseQuestion.options.forEach((variant) => {
+    const options = baseQuestion.options ?? []
+    options.forEach((variant) => {
       expect(wrapper.text()).toContain(variant)
     })
   })
