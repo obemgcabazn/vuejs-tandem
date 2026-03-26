@@ -16,7 +16,7 @@
             Хост: <span> {{ room.hostName }}</span>
           </p>
           <p>
-            Тема: <span> {{ room.topicId }}</span>
+            Тема: <span> {{ getTopicTitle(room?.topicId ?? '') }}</span>
           </p>
           <p>
             Участников: <span> {{ room.memberCount }}</span>
@@ -31,10 +31,8 @@
         </div>
       </template>
 
-      <template v-else-if="!isTopicSelected">
-        <p v-if="!isLoading" class="online-mini-game-description">
-          Выберите тему и создайте комнату для игры
-        </p>
+      <template v-if="!isLoading">
+        <p class="online-mini-game-description">Выберите тему и создайте комнату для игры</p>
         <div v-if="!isLoading" ref="topicsListEl" class="online-mini-game-content">
           <div
             v-for="topic in topics"
@@ -53,9 +51,9 @@
           Выбрать тему и создать комнату
         </button>
       </template>
-      <h2 v-if="selectedTopicTitle" class="online-mini-game-subtitle">
+      <!-- <h2 v-if="selectedTopicTitle" class="online-mini-game-subtitle">
         Вы выбрали тему: {{ selectedTopicTitle }}
-      </h2>
+      </h2> -->
     </div>
   </div>
 </template>
@@ -74,7 +72,7 @@ const isLoading = ref<boolean>(false)
 const selectedTopicId = ref<string | null>(null)
 const selectedTopicTitle = ref<string | null>(null)
 const topicsListEl = ref<HTMLElement | null>(null)
-const isTopicSelected = ref<boolean>(false)
+// const isTopicSelected = ref<boolean>(false)
 const isSubmittingTopic = ref<boolean>(false)
 const rooms = ref<IPublicRoomDto[]>([])
 const accessToken = localStorage.getItem('access-token') ?? ''
@@ -101,6 +99,12 @@ onMounted(async () => {
   } finally {
     isLoading.value = false
   }
+  socket.on('connect', () => {
+    console.log('connected', socket.id)
+  })
+  socket.on('disconnect', () => {
+    console.log('disconnected')
+  })
   socket.on('message', (payload) => {
     console.log('message from server:', payload)
   })
@@ -108,9 +112,10 @@ onMounted(async () => {
   socket.on('room:state', (payload) => {
     console.log('room:state:', payload)
   })
-  socket.on('connect', () => {
-    console.log('connected', socket.id)
+  socket.on('room:create', (payload) => {
+    console.log('room:create:', payload)
   })
+
   socket.on('connect_error', (err) => {
     console.error('connect_error', err.message)
   })
@@ -137,6 +142,9 @@ function chooseTopic(e: Event, topicId: string) {
 function joinRoom(roomId: string) {
   socket.emit('room:join', { roomId })
 }
+function getTopicTitle(topicId: string): string {
+  return topics.value.find((topic) => topic.id === topicId)?.title ?? ''
+}
 
 function getRoomStatusClass(status: string): string {
   if (status === 'waiting') return 'room-status-waiting'
@@ -154,21 +162,19 @@ async function selectTopic() {
     const roomsResponse = await getAllPublickRooms()
 
     rooms.value = roomsResponse.data
-    isTopicSelected.value = true
   } catch (error) {
     console.error('Failed to select topic for online game:', error)
-    isTopicSelected.value = false
   } finally {
     isSubmittingTopic.value = false
+    removeActiveFromTopics()
   }
 }
 onUnmounted(() => {
-  socket.off('connect')
-  socket.off('disconnect')
-  socket.off('message')
-  socket.off('room:state')
-  socket.off('game:update')
-  socket.disconnect()
+  // socket.off('connect')
+  // socket.off('disconnect')
+  // socket.off('message')
+  // socket.off('room:state')
+  // socket.disconnect()
 })
 </script>
 
