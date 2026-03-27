@@ -41,7 +41,7 @@ export async function postToJudgeUsersAnswer(payload: JudgeAnswerPayload) {
   })
 }
 
-export async function getAllPublickRooms(): Promise<IPublicRoomResponse> {
+export async function getAllPublicRooms(): Promise<IPublicRoomResponse> {
   const response = await apiFetch(getBaseUrl() + apiEndpoints.game.getAllPublickRooms)
   if (!response.ok) {
     throw new Error('Failed to fetch public rooms')

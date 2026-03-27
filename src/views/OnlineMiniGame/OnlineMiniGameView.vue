@@ -3,97 +3,118 @@
     <div class="online-mini-game-wrapper">
       <h2 class="online-mini-game-title">Онлайн мини-игра по изучению JavaScript</h2>
       <GearSpinner v-if="isLoading" :size="56" :isLabel="true" />
-
-      <h3>Комнаты</h3>
-      <div v-if="rooms.length === 0 && !isLoading">
-        <p>Нет активных комнат</p>
-      </div>
-
-      <template v-if="rooms.length > 0">
-        <div v-for="room in rooms" :key="room.id" class="online-mini-game-room">
-          <!-- <h3>ID комнаты: {{ room.id }}</h3> -->
-          <p>
-            Хост: <span> {{ room.hostName }}</span>
-          </p>
-          <p>
-            Тема: <span> {{ getTopicTitle(room?.topicId ?? '') }}</span>
-          </p>
-          <p>
-            Участников: <span> {{ room.memberCount }}</span>
-          </p>
-          <p>
-            Макс. кол-во участников: <span> {{ room.maxMembers }}</span>
-          </p>
-          <p>
-            Статус: <span :class="getRoomStatusClass(room.status)"> {{ room.status }}</span>
-          </p>
-          <button @click="joinRoom(room.id)">Присоединиться</button>
+      <div v-if="!isLoading && !isJoinedToRoom">
+        <h3>Комнаты</h3>
+        <div v-if="rooms.length === 0 && !isLoading">
+          <p>Нет активных комнат</p>
         </div>
-      </template>
 
-      <template v-if="!isLoading">
-        <p class="online-mini-game-description">Выберите тему и создайте комнату для игры</p>
-        <div v-if="!isLoading" ref="topicsListEl" class="online-mini-game-content">
-          <div
-            v-for="topic in topics"
-            :key="topic.id"
-            class="online-mini-game-content-item"
-            @click="(e) => chooseTopic(e, topic.id)"
-          >
-            {{ topic.title }}
+        <template v-if="rooms.length > 0">
+          <div v-for="room in rooms" :key="room.id" class="online-mini-game-room">
+            <!-- <h3>ID комнаты: {{ room.id }}</h3> -->
+            <p>
+              Хост: <span> {{ room.hostName }}</span>
+            </p>
+            <p>
+              Тема: <span> {{ getTopicTitle(room?.topicId ?? '') }}</span>
+            </p>
+            <p>
+              Участников: <span> {{ room.memberCount }}</span>
+            </p>
+            <p>
+              Макс. кол-во участников: <span> {{ room.maxMembers }}</span>
+            </p>
+            <p>
+              Статус: <span :class="getRoomStatusClass(room.status)"> {{ room.status }}</span>
+            </p>
+            <button @click="joinRoom(room.id)">Присоединиться</button>
           </div>
-        </div>
-        <button
-          :disabled="selectedTopicId === null || isSubmittingTopic"
-          class="online-mini-game-content-button"
-          @click="selectTopic"
-        >
-          Выбрать тему и создать комнату
-        </button>
-      </template>
-      <!-- <h2 v-if="selectedTopicTitle" class="online-mini-game-subtitle">
-        Вы выбрали тему: {{ selectedTopicTitle }}
-      </h2> -->
+        </template>
+
+        <template v-if="!isLoading">
+          <p class="online-mini-game-description">Выберите тему и создайте комнату для игры</p>
+          <div v-if="!isLoading" ref="topicsListEl" class="online-mini-game-content">
+            <div
+              v-for="topic in topics"
+              :key="topic.id"
+              class="online-mini-game-content-item"
+              @click="(e) => chooseTopic(e, topic.id)"
+            >
+              {{ topic.title }}
+            </div>
+          </div>
+          <button
+            :disabled="selectedTopicId === null || isSubmittingTopic"
+            class="online-mini-game-content-button"
+            @click="selectTopic"
+          >
+            Cоздать комнату и войти
+          </button>
+        </template>
+      </div>
+      <!-- <RoomView v-if="isJoinedToRoom" :room="currentRoom" /> -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, onUnmounted } from 'vue'
+// import RoomView from './RoomView.vue'
 import { getAllTopics } from '@/api/requests'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
 import type { ITopicData } from '@/types/types'
 import { io } from 'socket.io-client'
-import { getAllPublickRooms } from '@/api/requests'
+import { getAllPublicRooms } from '@/api/requests'
 import type { IPublicRoomDto } from '@/types/types'
+
+defineOptions({
+  name: 'OnlineMiniGame',
+})
 
 const topics = ref<Array<ITopicData>>([])
 const isLoading = ref<boolean>(false)
 const selectedTopicId = ref<string | null>(null)
 const selectedTopicTitle = ref<string | null>(null)
 const topicsListEl = ref<HTMLElement | null>(null)
-// const isTopicSelected = ref<boolean>(false)
+const isJoinedToRoom = ref<boolean>(false)
 const isSubmittingTopic = ref<boolean>(false)
 const rooms = ref<IPublicRoomDto[]>([])
-const accessToken = localStorage.getItem('access-token') ?? ''
+// const currentRoom = computed(
+//   () => rooms.value.find((room) => room.id === currentRoomId.value) ?? null,
+// )
+const ROOM_ID_KEY = 'current-room-id'
+const currentRoomId = ref<string | null>(sessionStorage.getItem(ROOM_ID_KEY))
+
 const socket = io('http://localhost:3000/game', {
-  transports: ['websocket'],
-  auth: accessToken ? { token: `Bearer ${accessToken}` } : undefined,
+  autoConnect: false,
+  forceNew: true,
+  transports: ['websocket', 'polling'],
+  auth: (cb) => {
+    const accessToken = localStorage.getItem('access-token') ?? ''
+    const payload: Record<string, string> = {}
+    if (accessToken) payload.token = `Bearer ${accessToken}`
+    if (currentRoomId.value) payload.roomId = currentRoomId.value
+    cb(payload)
+  },
 })
 
-defineOptions({
-  name: 'OnlineMiniGame',
-})
+function setCurrentRoomId(roomId: string | null) {
+  currentRoomId.value = roomId
+  if (roomId) {
+    sessionStorage.setItem(ROOM_ID_KEY, roomId)
+  } else {
+    sessionStorage.removeItem(ROOM_ID_KEY)
+  }
+}
 
 onMounted(async () => {
   console.log('OnlineMiniGame mounted')
-  socket.connect()
   isLoading.value = true
 
   try {
     const topicsResponse = await getAllTopics()
     topics.value = topicsResponse.data.data
-    const roomsResponse = await getAllPublickRooms()
+    const roomsResponse = await getAllPublicRooms()
     console.log(roomsResponse)
     rooms.value = roomsResponse.data
   } finally {
@@ -111,14 +132,28 @@ onMounted(async () => {
 
   socket.on('room:state', (payload) => {
     console.log('room:state:', payload)
+    if (payload?.roomId) {
+      setCurrentRoomId(payload.roomId)
+    }
   })
   socket.on('room:create', (payload) => {
     console.log('room:create:', payload)
+    if (payload?.roomId) {
+      setCurrentRoomId(payload.roomId)
+    }
   })
 
-  socket.on('connect_error', (err) => {
-    console.error('connect_error', err.message)
+  socket.on('connect_error', (err: Error & { description?: unknown; data?: unknown }) => {
+    console.error('connect_error', {
+      message: err.message,
+      description: err.description,
+      data: err.data,
+    })
   })
+  socket.on('error', (err) => {
+    console.error('socket_error', err)
+  })
+  socket.connect()
 })
 
 function removeActiveFromTopics() {
@@ -135,11 +170,13 @@ function chooseTopic(e: Event, topicId: string) {
   if (!(el instanceof HTMLElement)) return
   removeActiveFromTopics()
   selectedTopicId.value = topicId
-  selectedTopicTitle.value = el.textContent
+  selectedTopicTitle.value = getTopicTitle(topicId)
   el.classList.add('active')
 }
 
 function joinRoom(roomId: string) {
+  isJoinedToRoom.value = true
+  console.log('joinRoom', roomId)
   socket.emit('room:join', { roomId })
 }
 function getTopicTitle(topicId: string): string {
@@ -154,14 +191,15 @@ function getRoomStatusClass(status: string): string {
 }
 
 async function selectTopic() {
-  if (selectedTopicId.value === null || isSubmittingTopic.value) return
+  if (selectedTopicId.value === null) return
 
-  isSubmittingTopic.value = true
+  console.log('selectTopic', selectedTopicId.value)
   try {
     socket.emit('room:create', { topicId: selectedTopicId.value })
-    const roomsResponse = await getAllPublickRooms()
+    isJoinedToRoom.value = true
+    // const roomsResponse = await getAllPublicRooms()
 
-    rooms.value = roomsResponse.data
+    // rooms.value = roomsResponse.data
   } catch (error) {
     console.error('Failed to select topic for online game:', error)
   } finally {
@@ -170,11 +208,8 @@ async function selectTopic() {
   }
 }
 onUnmounted(() => {
-  // socket.off('connect')
-  // socket.off('disconnect')
-  // socket.off('message')
-  // socket.off('room:state')
-  // socket.disconnect()
+  socket.removeAllListeners()
+  socket.disconnect()
 })
 </script>
 

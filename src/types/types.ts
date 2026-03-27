@@ -140,3 +140,18 @@ export interface IPublicRoomDto {
 }
 
 export type RoomStatus = 'waiting' | 'in_progress' | 'finished'
+
+export interface IRoomMember {
+  userId: string
+  name: string
+  score: number
+  ready: boolean
+}
+
+export interface IRoomResponse {
+  roomId: string
+  status: RoomStatus
+  hostId: string
+  topicId: string
+  members: IRoomMember[]
+}
