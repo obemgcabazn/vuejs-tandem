@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { ru } from '@/locales'
 import { useGameStore } from '@/stores/game'
 import Header from '@/components/Header/Header.vue'
@@ -16,12 +16,6 @@ const gameStore = useGameStore()
 const showFirstMessage = ref(true)
 const isGameStarted = ref(false)
 const isCabElectroniksZone = ref(false)
-
-onMounted(() => {
-  if (!gameStore.isInitialized) {
-    gameStore.init(t.zones)
-  }
-})
 
 function startAssembly() {
   gameStore.startAssembly()
@@ -58,7 +52,16 @@ function launchConveyor() {
 
 function reset() {
   gameStore.reset(t.zones)
+  isCabElectroniksZone.value = false
+  isGameStarted.value = false
   showFirstMessage.value = true
+}
+
+function onCabAndElectronicsFinished() {
+  gameStore.vasilkiCount = 0
+  gameStore.errorCount = 0
+  isCabElectroniksZone.value = false
+  isGameStarted.value = false
 }
 </script>
 
@@ -77,7 +80,10 @@ function reset() {
         </div>
       </div>
       <GameContainer v-else>
-        <CabAndElectronics v-if="isCabElectroniksZone" />
+        <CabAndElectronics
+          v-if="isCabElectroniksZone"
+          @CabAndElectronicsFinished="onCabAndElectronicsFinished"
+        />
       </GameContainer>
       <GameSidebar
         :zones="gameStore.zones"
