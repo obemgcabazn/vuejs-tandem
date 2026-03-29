@@ -42,15 +42,14 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       if (!response.ok) {
-        error.value = 'Неизвестная ошибка сервера'
+        error.value = 'Unknown server error'
         return
       }
 
       const respObj = await response.json()
-      console.log(respObj)
       setToken(respObj)
-      user.value = userData
-      localStorage.setItem('user', JSON.stringify(userData))
+      user.value = { email: userData.email }
+      localStorage.setItem('user', JSON.stringify(user.value))
     } catch (e) {
       console.error(e)
     } finally {
@@ -75,25 +74,25 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       if (response.status === 409) {
-        error.value = 'Email уже зарегистрирован'
+        error.value = 'Email is already registered'
         return
       }
 
       if (response.status === 400) {
         const data = await response.json()
-        error.value = data.message ?? 'Ошибка валидации'
+        error.value = data.message ?? 'Validation error'
         return
       }
 
       if (!response.ok) {
-        error.value = 'Неизвестная ошибка сервера'
+        error.value = 'Unknown server error'
         return
       }
 
       const respObj = await response.json()
       setToken(respObj)
-      user.value = userData
-      localStorage.setItem('user', JSON.stringify(userData))
+      user.value = { email: userData.email }
+      localStorage.setItem('user', JSON.stringify(user.value))
     } catch (e) {
       console.error(e)
     } finally {

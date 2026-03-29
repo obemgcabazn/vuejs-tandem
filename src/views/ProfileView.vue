@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import type { User } from '@/types'
 import { apiFetch } from '@/utils'
+import { patchUserName } from '@/api/requests'
 
 type UserStats = Record<string, string | number>
 
@@ -13,6 +14,11 @@ const progress = ref<UserProgress | null>(null)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+const isEditingName = ref(false)
+const editedName = ref('')
+const savingName = ref(false)
+const nameError = ref<string | null>(null)
 
 async function fetchJson(path: string) {
   const response = await apiFetch(import.meta.env.VITE_API_URL + path)
@@ -33,6 +39,7 @@ onMounted(async () => {
     ])
 
     profile.value = profileData
+    editedName.value = profileData.name ?? ''
     stats.value = statsData
     progress.value = progressData
   } catch {
@@ -41,13 +48,38 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+function startEdit() {
+  editedName.value = profile.value?.name ?? ''
+  nameError.value = null
+  isEditingName.value = true
+}
+
+async function confirmEdit() {
+  const trimmed = editedName.value.trim()
+  if (!trimmed || trimmed === profile.value?.name) {
+    isEditingName.value = false
+    return
+  }
+  savingName.value = true
+  nameError.value = null
+  try {
+    const updated = await patchUserName(trimmed)
+    if (profile.value) profile.value = { ...profile.value, ...updated }
+    isEditingName.value = false
+  } catch {
+    nameError.value = 'Не удалось сохранить имя'
+  } finally {
+    savingName.value = false
+  }
+}
 </script>
 
 <template>
   <main class="profile">
     <h1 class="profile__title">Profile</h1>
 
-    <p v-if="loading" class="profile__loading">Загрузка...</p>
+    <p v-if="loading" class="profile__loading">Loading...</p>
 
     <p v-else-if="error" class="profile__error">{{ error }}</p>
 
@@ -56,10 +88,59 @@ onMounted(async () => {
       <section class="profile__section">
         <h2 class="profile__section-title">Info</h2>
         <template v-if="profile">
-          <div v-if="profile.name" class="profile__field">
+          <!-- Editable name field -->
+          <div v-if="profile.name !== undefined" class="profile__field">
             <span class="profile__label">Username</span>
-            <span class="profile__value">{{ profile.name }}</span>
+            <div class="profile__editable">
+              <input
+                v-model="editedName"
+                class="profile__input"
+                :disabled="!isEditingName || savingName"
+                @keyup.enter="confirmEdit"
+                @keyup.esc="isEditingName = false"
+              />
+              <button
+                class="profile__icon-btn"
+                :disabled="savingName"
+                :title="isEditingName ? 'Save' : 'Edit'"
+                @click="isEditingName ? confirmEdit() : startEdit()"
+              >
+                <!-- Checkmark -->
+                <svg
+                  v-if="isEditingName"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <!-- Pencil -->
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </button>
+            </div>
+            <p v-if="nameError" class="profile__field-error">{{ nameError }}</p>
           </div>
+
           <div class="profile__field">
             <span class="profile__label">Email</span>
             <span class="profile__value">{{ profile.email }}</span>
@@ -167,5 +248,60 @@ onMounted(async () => {
 
 .profile__value {
   font-size: 1rem;
+}
+
+.profile__editable {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile__input {
+  flex: 1;
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 0.1rem 0;
+  color: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.profile__input:not(:disabled) {
+  border-bottom-color: rgba(107, 83, 68, 0.5);
+}
+
+.profile__input:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.profile__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  color: inherit;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.profile__icon-btn:hover:not(:disabled) {
+  opacity: 1;
+}
+
+.profile__icon-btn:disabled {
+  cursor: default;
+}
+
+.profile__field-error {
+  font-size: 0.75rem;
+  color: red;
+  margin: 0;
 }
 </style>
