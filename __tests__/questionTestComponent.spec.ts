@@ -42,6 +42,7 @@ describe('QuestionTestComponent', () => {
     type: 'single-choice',
     userSubmission: null,
     xpReward: 1,
+    timeLimit: 60,
   }
 
   beforeEach(() => {

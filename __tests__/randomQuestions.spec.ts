@@ -17,6 +17,7 @@ describe('randomQuestions helper', () => {
         order: 30,
         options: null,
         userSubmission: null,
+        timeLimit: 60,
       },
       {
         id: '2',
@@ -30,6 +31,7 @@ describe('randomQuestions helper', () => {
         order: 31,
         options: null,
         userSubmission: null,
+        timeLimit: 60,
       },
       {
         id: '3',
@@ -43,6 +45,7 @@ describe('randomQuestions helper', () => {
         order: 32,
         options: null,
         userSubmission: null,
+        timeLimit: 60,
       },
       {
         id: '4',
@@ -56,6 +59,7 @@ describe('randomQuestions helper', () => {
         order: 33,
         options: null,
         userSubmission: null,
+        timeLimit: 60,
       },
     ]
 
@@ -92,6 +96,7 @@ describe('randomQuestions helper', () => {
         order: 31,
         options: null,
         userSubmission: null,
+        timeLimit: 60,
       },
     ]
 
