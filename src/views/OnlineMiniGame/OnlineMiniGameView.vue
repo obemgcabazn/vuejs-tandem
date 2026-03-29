@@ -4,13 +4,13 @@
       <h2 class="online-mini-game-title">Онлайн мини-игра по изучению JavaScript</h2>
       <GearSpinner v-if="isLoading" :size="56" :isLabel="true" />
       <div v-if="!isLoading && !isJoinedToRoom">
-        <h3>Комнаты</h3>
+        <h3>Комнаты:</h3>
         <div v-if="rooms.length === 0 && !isLoading">
           <p>Нет активных комнат</p>
         </div>
 
         <template v-if="rooms.length > 0">
-          <div v-for="room in rooms" :key="room.id" class="online-mini-game-room">
+          <div v-for="room in rooms" :key="room.roomId" class="online-mini-game-room">
             <!-- <h3>ID комнаты: {{ room.id }}</h3> -->
             <p>
               Хост: <span> {{ room.hostName }}</span>
@@ -27,7 +27,7 @@
             <p>
               Статус: <span :class="getRoomStatusClass(room.status)"> {{ room.status }}</span>
             </p>
-            <button @click="joinRoom(room.id)">Присоединиться</button>
+            <button @click="joinRoom(room.roomId)">Присоединиться</button>
           </div>
         </template>
 
@@ -52,20 +52,20 @@
           </button>
         </template>
       </div>
-      <!-- <RoomView v-if="isJoinedToRoom" :room="currentRoom" /> -->
+      <RoomView v-if="isJoinedToRoom" :room="currentRoom" :socket="socket" @goBack="backToRooms" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, onUnmounted } from 'vue'
-// import RoomView from './RoomView.vue'
+import RoomView from './RoomView.vue'
 import { getAllTopics } from '@/api/requests'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
 import type { ITopicData } from '@/types/types'
 import { io } from 'socket.io-client'
 import { getAllPublicRooms } from '@/api/requests'
-import type { IPublicRoomDto } from '@/types/types'
+import type { IPublicRoomDto, IRoomResponse, RoomCreatedEvent, IRoom } from '@/types/types'
 
 defineOptions({
   name: 'OnlineMiniGame',
@@ -78,10 +78,11 @@ const selectedTopicTitle = ref<string | null>(null)
 const topicsListEl = ref<HTMLElement | null>(null)
 const isJoinedToRoom = ref<boolean>(false)
 const isSubmittingTopic = ref<boolean>(false)
-const rooms = ref<IPublicRoomDto[]>([])
-// const currentRoom = computed(
-//   () => rooms.value.find((room) => room.id === currentRoomId.value) ?? null,
-// )
+const rooms = ref<IRoom[]>([])
+const accessToken = localStorage.getItem('access-token') ?? ''
+console.log('accessToken', accessToken)
+//IRoomResponse
+const currentRoom = ref<IRoomResponse | null>(null)
 const ROOM_ID_KEY = 'current-room-id'
 const currentRoomId = ref<string | null>(sessionStorage.getItem(ROOM_ID_KEY))
 
@@ -89,13 +90,7 @@ const socket = io('http://localhost:3000/game', {
   autoConnect: false,
   forceNew: true,
   transports: ['websocket', 'polling'],
-  auth: (cb) => {
-    const accessToken = localStorage.getItem('access-token') ?? ''
-    const payload: Record<string, string> = {}
-    if (accessToken) payload.token = `Bearer ${accessToken}`
-    if (currentRoomId.value) payload.roomId = currentRoomId.value
-    cb(payload)
-  },
+  auth: { token: `Bearer ${accessToken}` },
 })
 
 function setCurrentRoomId(roomId: string | null) {
@@ -116,30 +111,64 @@ onMounted(async () => {
     topics.value = topicsResponse.data.data
     const roomsResponse = await getAllPublicRooms()
     console.log(roomsResponse)
-    rooms.value = roomsResponse.data
+    rooms.value = roomsResponse.data.map(
+      (room: IPublicRoomDto): IRoom => ({
+        roomId: room.id,
+        hostName: room.hostName,
+        topicId: room.topicId ?? null,
+        memberCount: room.memberCount,
+        maxMembers: 6,
+        status: room.status,
+      }),
+    )
   } finally {
     isLoading.value = false
   }
   socket.on('connect', () => {
     console.log('connected', socket.id)
   })
-  socket.on('disconnect', () => {
-    console.log('disconnected')
+  socket.on('disconnect', (payload) => {
+    console.log('disconnected', payload)
+    isJoinedToRoom.value = false
+    currentRoom.value = null
+    setCurrentRoomId(null)
+    rooms.value = []
+    selectedTopicId.value = null
+    selectedTopicTitle.value = null
+    topicsListEl.value = null
+    isSubmittingTopic.value = false
   })
   socket.on('message', (payload) => {
     console.log('message from server:', payload)
   })
+  socket.on('session', (payload) => {
+    console.log('session:', payload)
+  })
 
   socket.on('room:state', (payload) => {
     console.log('room:state:', payload)
-    if (payload?.roomId) {
-      setCurrentRoomId(payload.roomId)
+    if (payload) {
+      currentRoom.value = payload
     }
   })
   socket.on('room:create', (payload) => {
     console.log('room:create:', payload)
     if (payload?.roomId) {
       setCurrentRoomId(payload.roomId)
+    }
+  })
+  socket.on('room:created', (payload: RoomCreatedEvent) => {
+    console.log('room:created:', payload)
+    if (payload) {
+      const newRoom: IRoom = {
+        roomId: payload.roomId,
+        hostName: payload.hostName,
+        topicId: payload.topicId,
+        memberCount: payload.membersCount,
+        maxMembers: 6,
+        status: 'waiting',
+      }
+      rooms.value.push(newRoom)
     }
   })
 
@@ -182,7 +211,29 @@ function joinRoom(roomId: string) {
 function getTopicTitle(topicId: string): string {
   return topics.value.find((topic) => topic.id === topicId)?.title ?? ''
 }
+async function backToRooms() {
+  isJoinedToRoom.value = false
+  isLoading.value = true
 
+  try {
+    const topicsResponse = await getAllTopics()
+    topics.value = topicsResponse.data.data
+    const roomsResponse = await getAllPublicRooms()
+    console.log(roomsResponse)
+    rooms.value = roomsResponse.data.map(
+      (room: IPublicRoomDto): IRoom => ({
+        roomId: room.id,
+        hostName: room.hostName,
+        topicId: room.topicId ?? null,
+        memberCount: room.memberCount,
+        maxMembers: 6,
+        status: room.status,
+      }),
+    )
+  } finally {
+    isLoading.value = false
+  }
+}
 function getRoomStatusClass(status: string): string {
   if (status === 'waiting') return 'room-status-waiting'
   if (status === 'in_progress') return 'room-status-in-progress'
