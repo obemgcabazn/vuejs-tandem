@@ -32,7 +32,7 @@
     </div>
     <div v-if="isGameStarted" class="room-view-game-container">
       <div class="room-view-game-task">
-        <h3>Задание {{ gameTask?.taskIndex + 1 }} из {{ gameTask?.totalTasks }}</h3>
+        <h3>Задание {{ (gameTask?.taskIndex ?? 0) + 1 }} из {{ gameTask?.totalTasks ?? '—' }}</h3>
         <p>{{ gameTask?.task.title }}</p>
         <p>{{ gameTask?.task.description }}</p>
         <textarea
