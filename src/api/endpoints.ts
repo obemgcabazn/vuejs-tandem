@@ -8,4 +8,7 @@ export const apiEndpoints = {
     postToJudgeUsersAnswer: `/judge`,
     postToJudgeForHint: `/judge/hint`,
   },
+  users: {
+    patchMe: '/users/me',
+  },
 } as const

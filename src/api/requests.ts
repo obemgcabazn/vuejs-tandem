@@ -55,3 +55,14 @@ export async function postToJudgeForHint(payload: JudgeHintPayload) {
     body: JSON.stringify(payload),
   })
 }
+
+export async function patchUserName(name: string) {
+  const response = await apiFetch(getBaseUrl() + apiEndpoints.users.patchMe, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  })
+  if (!response.ok) throw new Error('Failed to update name')
+  const data = await response.json()
+  return data.data ?? data
+}
