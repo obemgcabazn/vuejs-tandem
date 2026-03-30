@@ -69,6 +69,7 @@ export type User = {
   role?: 'user'
   createdAt?: string
   id?: string
+  avatarUrl?: string
 }
 
 export interface ITaskResponse {

@@ -66,3 +66,14 @@ export async function patchUserName(name: string) {
   const data = await response.json()
   return data.data ?? data
 }
+
+export async function patchUserAvatar(avatarUrl: string) {
+  const response = await apiFetch(getBaseUrl() + apiEndpoints.users.patchMe, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ avatarUrl }),
+  })
+  if (!response.ok) throw new Error('Failed to update avatar')
+  const data = await response.json()
+  return data.data ?? data
+}
