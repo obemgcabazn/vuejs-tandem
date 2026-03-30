@@ -24,7 +24,9 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
   const token = localStorage.getItem('access-token')
   const response = await fetch(url, { ...options, headers: buildHeaders(options, token) })
 
-  if (response.status !== 401) return response
+  if (response.status !== 401) {
+    return response
+  }
 
   const refreshed = await authStore.refreshTokens()
   if (!refreshed) {
