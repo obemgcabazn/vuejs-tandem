@@ -21,6 +21,9 @@
   height: 100%;
   width: 100%;
 }
+.room-view-game-container {
+  width: 60%;
+}
 
 .room-view-members {
   display: flex;
@@ -42,8 +45,9 @@
   font-weight: 500;
   /* border: 2px solid #6b5344; */
   padding-top: 10px;
-  border-radius: 5px;
+  padding-bottom: 10px;
   color: black;
+  border-bottom: 1px solid #6b5344;
 }
 
 .room-view-member-name {
@@ -54,6 +58,10 @@
 }
 .room-view-member-status {
   width: 155px;
+}
+
+.room-view-member-rank {
+  width: 100px;
 }
 
 .room-view-member-score span {
@@ -77,6 +85,11 @@
   &:hover {
     background: linear-gradient(180deg, #a5d6a7, #81c784);
   }
+}
+
+.room-view-game-task {
+  width: 60%;
+  margin: 20px auto;
 }
 
 .room-view-game-task-input {
@@ -116,6 +129,71 @@
     background: linear-gradient(180deg, #a5d6a7, #81c784);
   }
 }
+.room-view-game-back {
+  border-color: #5a8c4a;
+  width: 100px;
+
+  color: #2d5016;
+  background: linear-gradient(180deg, #c8e6c9, #a5d6a7);
+  transition: all 0.3s ease;
+  padding: 10px;
+  margin: 20px auto;
+  border: 2px solid;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    background: linear-gradient(180deg, #a5d6a7, #81c784);
+  }
+}
+
+.room-view-game-task-waiting {
+  color: #b99300;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 10px;
+  animation: waitingColorPulse 2s ease-in-out infinite;
+}
+.room-view-game-winner {
+  color: #b99300;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 20px;
+  animation: winnerColorPulse 1s ease-in-out infinite;
+}
+
+@keyframes waitingColorPulse {
+  0%,
+  100% {
+    color: #b99300;
+  }
+
+  50% {
+    color: #f0cf5f;
+  }
+}
+
+@keyframes winnerColorPulse {
+  0%,
+  100% {
+    color: #b99300;
+  }
+  75% {
+    color: #5302eb;
+  }
+  50% {
+    color: #0baa2d;
+  }
+  25% {
+    color: #ff0000;
+  }
+  0% {
+    color: #08ffff;
+  }
+}
+
 .member-status-waiting {
   color: #b99300;
 }

@@ -59,6 +59,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import RoomView from './RoomView.vue'
 import { getAllTopics } from '@/api/requests'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
@@ -66,11 +67,13 @@ import type { ITopicData } from '@/types/types'
 import { io } from 'socket.io-client'
 import { getAllPublicRooms } from '@/api/requests'
 import type { IPublicRoomDto, IRoomResponse, RoomCreatedEvent, IRoom } from '@/types/types'
+import { useAuthStore } from '@/stores/auth'
 
 defineOptions({
   name: 'OnlineMiniGame',
 })
 
+const router = useRouter()
 const topics = ref<Array<ITopicData>>([])
 const isLoading = ref<boolean>(false)
 const selectedTopicId = ref<string | null>(null)
@@ -80,7 +83,6 @@ const isJoinedToRoom = ref<boolean>(false)
 const isSubmittingTopic = ref<boolean>(false)
 const rooms = ref<IRoom[]>([])
 const accessToken = localStorage.getItem('access-token') ?? ''
-console.log('accessToken', accessToken)
 //IRoomResponse
 const currentRoom = ref<IRoomResponse | null>(null)
 const ROOM_ID_KEY = 'current-room-id'
@@ -93,6 +95,7 @@ const socket = io('http://localhost:3000/game', {
   auth: { token: `Bearer ${accessToken}` },
 })
 
+const authStore = useAuthStore()
 function setCurrentRoomId(roomId: string | null) {
   currentRoomId.value = roomId
   if (roomId) {
@@ -103,14 +106,13 @@ function setCurrentRoomId(roomId: string | null) {
 }
 
 onMounted(async () => {
-  console.log('OnlineMiniGame mounted')
   isLoading.value = true
-
+  await authStore.refreshTokens()
   try {
     const topicsResponse = await getAllTopics()
     topics.value = topicsResponse.data.data
     const roomsResponse = await getAllPublicRooms()
-    console.log(roomsResponse)
+
     rooms.value = roomsResponse.data.map(
       (room: IPublicRoomDto): IRoom => ({
         roomId: room.id,
@@ -125,10 +127,10 @@ onMounted(async () => {
     isLoading.value = false
   }
   socket.on('connect', () => {
-    console.log('connected', socket.id)
+    console.log('Socket connected, id: ', socket.id)
   })
   socket.on('disconnect', (payload) => {
-    console.log('disconnected', payload)
+    console.log('Socket disconnected, need to autorize again', payload)
     isJoinedToRoom.value = false
     currentRoom.value = null
     setCurrentRoomId(null)
@@ -137,28 +139,20 @@ onMounted(async () => {
     selectedTopicTitle.value = null
     topicsListEl.value = null
     isSubmittingTopic.value = false
-  })
-  socket.on('message', (payload) => {
-    console.log('message from server:', payload)
-  })
-  socket.on('session', (payload) => {
-    console.log('session:', payload)
+    router.replace({ name: 'login' })
   })
 
   socket.on('room:state', (payload) => {
-    console.log('room:state:', payload)
     if (payload) {
       currentRoom.value = payload
     }
   })
   socket.on('room:create', (payload) => {
-    console.log('room:create:', payload)
     if (payload?.roomId) {
       setCurrentRoomId(payload.roomId)
     }
   })
   socket.on('room:created', (payload: RoomCreatedEvent) => {
-    console.log('room:created:', payload)
     if (payload) {
       const newRoom: IRoom = {
         roomId: payload.roomId,
@@ -205,7 +199,7 @@ function chooseTopic(e: Event, topicId: string) {
 
 function joinRoom(roomId: string) {
   isJoinedToRoom.value = true
-  console.log('joinRoom', roomId)
+
   socket.emit('room:join', { roomId })
 }
 function getTopicTitle(topicId: string): string {
@@ -219,7 +213,6 @@ async function backToRooms() {
     const topicsResponse = await getAllTopics()
     topics.value = topicsResponse.data.data
     const roomsResponse = await getAllPublicRooms()
-    console.log(roomsResponse)
     rooms.value = roomsResponse.data.map(
       (room: IPublicRoomDto): IRoom => ({
         roomId: room.id,
@@ -244,12 +237,10 @@ function getRoomStatusClass(status: string): string {
 async function selectTopic() {
   if (selectedTopicId.value === null) return
 
-  console.log('selectTopic', selectedTopicId.value)
   try {
     socket.emit('room:create', { topicId: selectedTopicId.value })
     isJoinedToRoom.value = true
     // const roomsResponse = await getAllPublicRooms()
-
     // rooms.value = roomsResponse.data
   } catch (error) {
     console.error('Failed to select topic for online game:', error)

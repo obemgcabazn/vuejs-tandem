@@ -2,9 +2,12 @@
   <div class="room-view">
     <h2 class="room-view-title">Комната: {{ props.room?.roomId }}</h2>
     <div class="room-view-content">
-      <h3>Участники</h3>
+      <h3>Участники:</h3>
       <ul class="room-view-members">
         <li class="room-view-member" v-for="member in members" :key="member.userId">
+          <div class="room-view-member-rank">
+            Место: <span>{{ member.rank ? member.rank : '-' }}</span>
+          </div>
           <div class="room-view-member-name">{{ member.name }}</div>
 
           <div class="room-view-member-score">
@@ -24,9 +27,6 @@
           >
             Готов
           </button>
-          <div class="room-view-member-rank">
-            Место: <span>{{ member.rank }}</span>
-          </div>
         </li>
       </ul>
     </div>
@@ -42,9 +42,16 @@
           v-model="answer"
         />
         <button class="room-view-game-task-button" @click="submitAnswer">Ответить</button>
+
+        <p v-if="isGameWaiting" class="room-view-game-task-waiting">
+          Ожидание ответа остальных игроков
+        </p>
       </div>
     </div>
-    <button class="room-view-game-back" @click="goBack">Назад</button>
+    <p v-if="isGameFinished" class="room-view-game-winner">
+      Победитель: {{ winnerName }} ({{ winnerScore }} очков)!
+    </p>
+    <button v-if="isGameFinished" class="room-view-game-back" @click="goBack">Назад</button>
   </div>
 </template>
 
@@ -62,12 +69,16 @@ import type {
 import type { Socket } from 'socket.io-client'
 
 const isGameStarted = ref<boolean>(false)
+const isGameFinished = ref<boolean>(false)
+const isGameWaiting = ref<boolean>(false)
 const gameTask = ref<IGameTask | null>(null)
 const answer = ref<string>('')
 
 const authStore = useAuthStore()
 const user = authStore.user?.email
-console.log(user)
+
+const winnerName = ref<string>('')
+const winnerScore = ref<number>(0)
 const props = defineProps<{
   room: IRoomResponse | null
   socket: Socket
@@ -83,17 +94,13 @@ watch(
 )
 
 onMounted(() => {
-  console.log('RoomView mounted', props.room)
   props.socket.on('game:task', (payload: IGameTask) => {
-    console.log('game:task', payload)
     isGameStarted.value = true
     gameTask.value = payload
   })
-  props.socket.on('game:ready', (payload) => {
-    console.log('game:ready', payload)
-  })
+
   props.socket.on('game:task-complete', (payload: ITaskCompleted) => {
-    console.log('game:task-complete', payload)
+    isGameWaiting.value = false
     members.value = payload.scores.map((score: ITaskCompletedScore) => ({
       userId: score.userId,
       name: score.name,
@@ -104,7 +111,7 @@ onMounted(() => {
   })
 
   props.socket.on('game:finished', (payload) => {
-    console.log('game:finished', payload)
+    isGameWaiting.value = false
     members.value = payload.results.map((score: ITaskFinishedScore) => ({
       userId: score.userId,
       name: score.name,
@@ -112,19 +119,25 @@ onMounted(() => {
       ready: true,
       rank: score.rank,
     }))
+    winnerName.value = members.value.find((member) => member.rank === 1)?.name ?? ''
+    winnerScore.value = members.value.find((member) => member.rank === 1)?.score ?? 0
     isGameStarted.value = false
+    isGameFinished.value = true
     gameTask.value = null
     answer.value = ''
   })
 })
 
 function goBack() {
-  console.log('goBack')
+  isGameFinished.value = false
+  isGameWaiting.value = false
+  isGameStarted.value = false
+  gameTask.value = null
+  answer.value = ''
   emit('goBack')
 }
 
 function setReady() {
-  console.log('setReady')
   props.socket.emit('room:ready')
 }
 
@@ -134,9 +147,9 @@ function getMemberStatusClass(status: boolean): string {
 }
 
 function submitAnswer() {
-  console.log('submitAnswer', answer.value)
   props.socket.emit('game:answer', { answer: answer.value })
   answer.value = ''
+  isGameWaiting.value = true
 }
 </script>
 
