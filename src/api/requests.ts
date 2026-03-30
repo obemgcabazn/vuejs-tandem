@@ -67,7 +67,7 @@ export async function patchUserName(name: string) {
   return data.data ?? data
 }
 
-export async function patchUserAvatar(avatarUrl: string) {
+export async function patchUserAvatar(avatarUrl: string | null) {
   const response = await apiFetch(getBaseUrl() + apiEndpoints.users.patchMe, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },

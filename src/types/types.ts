@@ -69,7 +69,7 @@ export type User = {
   role?: 'user'
   createdAt?: string
   id?: string
-  avatarUrl?: string
+  avatarUrl?: string | null
 }
 
 export interface ITaskResponse {
