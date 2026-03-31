@@ -17,6 +17,7 @@ async function logout() {
       <RouterLink to="/" class="nav-brand">БелАЗ Танdem</RouterLink>
       <nav class="nav-links">
         <RouterLink to="/" class="nav-link">Игра</RouterLink>
+        <RouterLink to="/online-mini-game" class="nav-link">Онлайн мини-игра</RouterLink>
         <RouterLink to="/about" class="nav-link">О проекте</RouterLink>
         <RouterLink v-if="auth.isAuthenticated" to="/profile" class="nav-link">Профиль</RouterLink>
         <button v-if="auth.isAuthenticated" class="nav-logout" @click="logout">Выйти</button>

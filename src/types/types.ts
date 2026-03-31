@@ -91,7 +91,7 @@ export enum ETopics {
   TypeScript_Basics = 'TypeScript_Basics',
 }
 
-interface ITopicData {
+export interface ITopicData {
   id: string
   title: string
   description: string
@@ -103,11 +103,100 @@ export interface ITask {
   description: string
   difficulty: string
   id: string
-  options: string[]
+  options: string[] | null
   order: number
   title: string
   topicId: string
   type: string
   userSubmission: null
   xpReward: number
+}
+
+// export interface Room {
+//   id: string
+//   hostId: string
+//   members: Map<string, RoomMember>
+//   isPrivate: boolean // NEW
+//   status: 'waiting' | 'in_progress' | 'finished'
+//   topicId: string | null
+//   currentTaskIndex: number
+//   createdAt: Date
+//   lastActivityAt: Date
+// }
+
+export interface IPublicRoomResponse {
+  data: IPublicRoomDto[]
+  timestamp: string
+}
+
+export interface IPublicRoomDto {
+  id: string
+  hostName: string
+  topicId: string | null
+  memberCount: number
+  maxMembers: 6
+  status: RoomStatus
+  createdAt: Date
+}
+
+export type RoomStatus = 'waiting' | 'in_progress' | 'finished'
+
+export interface IRoomMember {
+  userId: string
+  name: string
+  score: number
+  ready: boolean
+  rank: number
+}
+
+export interface IRoomResponse {
+  roomId: string
+  status: RoomStatus
+  hostId: string
+  topicId: string
+  members: IRoomMember[]
+}
+export interface IRoom {
+  roomId: string
+  hostName: string
+  topicId: string | null
+  memberCount: number
+  maxMembers: number
+  status: RoomStatus
+}
+export interface RoomCreatedEvent {
+  roomId: string
+  hostName: string // email/name создателя
+  topicId: string | null
+  membersCount: number // всегда 1 при создании
+}
+
+export interface IGameTask {
+  task: ITask
+  taskIndex: number
+  totalTasks: number
+}
+
+export interface ITask {
+  description: string
+  id: string
+  timeLimit: number
+  title: string
+  type: string
+}
+
+export interface ITaskCompleted {
+  taskId: string
+  scores: ITaskCompletedScore[]
+}
+
+export interface ITaskCompletedScore {
+  userId: string
+  name: string
+  score: number
+  totalScore: number
+}
+
+export interface ITaskFinishedScore extends ITaskCompletedScore {
+  rank: number
 }

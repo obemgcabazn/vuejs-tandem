@@ -1,6 +1,6 @@
 import { apiFetch } from '@/utils/apiFetch'
 import { apiEndpoints } from './endpoints'
-import type { ITopicResponse, ITaskResponse } from '@/types/types'
+import type { ITopicResponse, ITaskResponse, IPublicRoomResponse } from '@/types/types'
 
 const getBaseUrl = () => import.meta.env.VITE_API_URL
 
@@ -39,6 +39,15 @@ export async function postToJudgeUsersAnswer(payload: JudgeAnswerPayload) {
     },
     body: JSON.stringify(payload),
   })
+}
+
+export async function getAllPublicRooms(): Promise<IPublicRoomResponse> {
+  const response = await apiFetch(getBaseUrl() + apiEndpoints.game.getAllPublickRooms)
+  if (!response.ok) {
+    throw new Error('Failed to fetch public rooms')
+  }
+  const data: IPublicRoomResponse = await response.json()
+  return data
 }
 
 export interface JudgeHintPayload {

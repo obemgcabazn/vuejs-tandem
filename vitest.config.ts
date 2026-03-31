@@ -7,7 +7,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       environment: 'jsdom',
-      pool: 'threads',
+      pool: 'forks',
       maxWorkers: 1,
       include: ['__tests__/**/*.spec.ts', '__tests__/**/*.spec.tsx'],
       exclude: [...configDefaults.exclude, 'e2e/**'],
