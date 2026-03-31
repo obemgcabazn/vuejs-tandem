@@ -8,8 +8,6 @@ export const apiEndpoints = {
     postToJudgeUsersAnswer: `/judge`,
     postToJudgeForHint: `/judge/hint`,
   },
-  game: {
-    getAllPublickRooms: `/rooms`,
   users: {
     patchMe: '/users/me',
   },
