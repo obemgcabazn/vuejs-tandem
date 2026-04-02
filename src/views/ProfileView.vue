@@ -6,7 +6,7 @@ import { patchUserName, patchUserAvatar } from '@/api/requests'
 
 type UserStats = Record<string, string | number>
 
-type UserProgress = Record<string, string | number>
+type UserProgress = string[]
 
 const profile = ref<User | null>(null)
 const stats = ref<UserStats | null>(null)
@@ -347,12 +347,7 @@ async function confirmEdit() {
       <!-- Progress -->
       <section class="profile__section">
         <h2 class="profile__section-title">Progress</h2>
-        <template v-if="progress">
-          <div v-for="(value, key) in progress" :key="key" class="profile__field">
-            <span class="profile__label">{{ key }}</span>
-            <span class="profile__value">{{ value }}</span>
-          </div>
-        </template>
+        <span class="profile__value">{{ progress != null ? progress.length / 4 : 0 }} %</span>
       </section>
     </div>
   </main>
