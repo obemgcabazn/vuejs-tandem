@@ -1,6 +1,11 @@
 import { apiFetch } from '@/utils/apiFetch'
 import { apiEndpoints } from './endpoints'
-import type { ITopicResponse, ITaskResponse, IPublicRoomResponse } from '@/types/types'
+import type {
+  ITopicResponse,
+  ITaskResponse,
+  IPublicRoomResponse,
+  LeaderboardPayload,
+} from '@/types/types'
 
 const getBaseUrl = () => import.meta.env.VITE_API_URL
 
@@ -85,4 +90,21 @@ export async function patchUserAvatar(avatarUrl: string | null) {
   if (!response.ok) throw new Error('Failed to update avatar')
   const data = await response.json()
   return data.data ?? data
+}
+
+export async function getLeaderboard(): Promise<LeaderboardPayload[]> {
+  const response = await apiFetch(getBaseUrl() + apiEndpoints.leaderboard)
+  if (!response.ok) throw new Error('Failed to fetch leaderboard')
+  const data = await response.json()
+  return data.data ?? data
+}
+
+export async function postToLeaderboard(payload: LeaderboardPayload) {
+  return apiFetch(getBaseUrl() + apiEndpoints.leaderboard, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
 }

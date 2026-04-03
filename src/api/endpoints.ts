@@ -14,4 +14,7 @@ export const apiEndpoints = {
   game: {
     getAllPublickRooms: `/rooms`,
   },
-} as const
+  leaderboard: '/leaderboard',
+}
+
+export type ApiEndpoints = typeof apiEndpoints
