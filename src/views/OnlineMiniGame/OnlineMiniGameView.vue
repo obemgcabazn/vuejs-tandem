@@ -61,13 +61,20 @@
           @updateLeaderboard="updateLeaderboard"
         />
         <div class="online-mini-game-leaderboard" v-if="!isLoading">
-          <h3>Таблица рекордов</h3>
+          <h3>Таблица рекордов &#127942;</h3>
+          <div class="online-mini-game-leaderboard-item" style="font-size: 14px; font-weight: 600">
+            <span class="online-mini-game-leaderboard-item-rank">Место</span>
+            <span class="online-mini-game-leaderboard-item-name">User</span>
+            <span class="online-mini-game-leaderboard-item-points">Очки</span>
+            <span class="online-mini-game-leaderboard-item-date">Дата рекорда</span>
+          </div>
           <ul class="online-mini-game-leaderboard-list">
             <li
               class="online-mini-game-leaderboard-item"
-              v-for="leader in leaderboard"
+              v-for="(leader, index) in leaderboard"
               :key="leader.id"
             >
+              <span class="online-mini-game-leaderboard-item-rank"> {{ index + 1 }}. </span>
               <span class="online-mini-game-leaderboard-item-name">{{ leader.userEmail }}</span>
               <span class="online-mini-game-leaderboard-item-points">{{ leader.points }}</span>
               <span class="online-mini-game-leaderboard-item-date">{{ leader.gameDate }}</span>
@@ -148,7 +155,6 @@ onMounted(async () => {
     topics.value = topicsResponse.data.data
     const roomsResponse = await getAllPublicRooms()
     const leadersResponse = await getLeaderboard()
-    console.log(leadersResponse)
     leaderboard.value = leadersResponse
 
     rooms.value = roomsResponse.data.map(

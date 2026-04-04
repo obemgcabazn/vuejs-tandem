@@ -65,7 +65,7 @@ import type {
   IRoomMember,
   ITaskCompletedScore,
   ITaskFinishedScore,
-  LeaderboardPayload,
+  PostToLeaderboard,
 } from '@/types/types'
 import { postToLeaderboard } from '@/api/requests'
 import type { Socket } from 'socket.io-client'
@@ -123,21 +123,20 @@ onMounted(() => {
     }))
     winnerName.value = members.value.find((member) => member.rank === 1)?.name ?? ''
     winnerScore.value = members.value.find((member) => member.rank === 1)?.score ?? 0
-    const winner: LeaderboardPayload = {
-      id: crypto.randomUUID(),
+    const winner: PostToLeaderboard = {
       userId: members.value.find((member) => member.rank === 1)?.userId ?? '',
       userEmail: winnerName.value,
       points: winnerScore.value,
-      gameDate: new Date().toISOString(),
-      createdAt: new Date(),
+      date: new Date().toISOString(),
     }
     try {
       const response = await postToLeaderboard(winner)
-      console.log('Победитель добавлен в таблицу рекордов', response)
+      if (response.ok) {
+        emit('updateLeaderboard')
+      }
     } catch (error) {
       console.error('Ошибка! Не удалось добавить победителя в таблицу рекордов', error)
     } finally {
-      emit('updateLeaderboard')
       isGameStarted.value = false
       isGameFinished.value = true
       gameTask.value = null

@@ -5,6 +5,7 @@ import type {
   ITaskResponse,
   IPublicRoomResponse,
   LeaderboardPayload,
+  PostToLeaderboard,
 } from '@/types/types'
 
 const getBaseUrl = () => import.meta.env.VITE_API_URL
@@ -99,7 +100,7 @@ export async function getLeaderboard(): Promise<LeaderboardPayload[]> {
   return data.data ?? data
 }
 
-export async function postToLeaderboard(payload: LeaderboardPayload) {
+export async function postToLeaderboard(payload: PostToLeaderboard) {
   return apiFetch(getBaseUrl() + apiEndpoints.leaderboard, {
     method: 'POST',
     headers: {

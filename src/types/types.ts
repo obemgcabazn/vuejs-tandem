@@ -197,3 +197,10 @@ export interface LeaderboardPayload {
   gameDate: string
   createdAt: Date
 }
+
+export interface PostToLeaderboard {
+  userId: string
+  userEmail: string
+  points: number
+  date: string
+}
