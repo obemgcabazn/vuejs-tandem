@@ -122,7 +122,7 @@ const currentRoom = ref<IRoomResponse | null>(null)
 const ROOM_ID_KEY = 'current-room-id'
 const currentRoomId = ref<string | null>(sessionStorage.getItem(ROOM_ID_KEY))
 const leaderboard = ref<LeaderboardPayload[]>([])
-const socket = io('http://localhost:3000/game', {
+const socket = io('https://d2f36jw82673f6.cloudfront.net/game', {
   autoConnect: false,
   forceNew: true,
   transports: ['websocket', 'polling'],
