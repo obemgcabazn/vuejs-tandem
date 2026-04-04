@@ -1,6 +1,6 @@
 <template>
   <h2 class="cab-and-electronics-title" style="margin-bottom: 20px">
-    Цех монтажа кабины и электроники
+    {{ ru.zones[props.zoneID as keyof typeof ru.zones] }}
   </h2>
   <GearSpinner v-if="isLoading" :size="56" :isLabel="true" />
   <MiniGameSnake v-if="miniGameSnake" @close="miniGameSnake = false" />
@@ -21,7 +21,7 @@
   </div>
   <div v-if="isGameFinished">
     <h2 class="cab-and-electronics-title">
-      Цех монтажа кабины и электроники заработал! Поздравляем!
+      {{ ru.zones[props.zoneID as keyof typeof ru.zones] }} заработал! Поздравляем!
     </h2>
   </div>
 </template>
@@ -30,6 +30,7 @@
 defineOptions({
   name: 'CabAndElectronics',
 })
+import { ru } from '@/locales'
 import { useGameStore } from '@/stores/game'
 import { computed, onMounted, ref } from 'vue'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
@@ -58,6 +59,9 @@ const miniGameSnake = ref<boolean>(false)
 const currentBlock = ref<TCurrentBlock>('test')
 const emit = defineEmits<{
   (e: 'CabAndElectronicsFinished'): void
+}>()
+const props = defineProps<{
+  zoneID: number
 }>()
 onMounted(async () => {
   isLoading.value = true
@@ -133,7 +137,7 @@ function finishGame() {
   aiBlock.value = false
   isGameFinished.value = true
   setTimeout(() => {
-    gameStore.setZoneCompleted(3)
+    gameStore.setZoneCompleted(props.zoneID ?? 0)
     emit('CabAndElectronicsFinished')
   }, 2000)
 }

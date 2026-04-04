@@ -3,56 +3,85 @@
     <div class="online-mini-game-wrapper">
       <h2 class="online-mini-game-title">Онлайн мини-игра по изучению JavaScript</h2>
       <GearSpinner v-if="isLoading" :size="56" :isLabel="true" />
-      <div v-if="!isLoading && !isJoinedToRoom">
-        <h3>Комнаты:</h3>
-        <div v-if="rooms.length === 0 && !isLoading">
-          <p>Нет активных комнат</p>
-        </div>
-
-        <template v-if="rooms.length > 0">
-          <div v-for="room in rooms" :key="room.roomId" class="online-mini-game-room">
-            <!-- <h3>ID комнаты: {{ room.id }}</h3> -->
-            <p>
-              Хост: <span> {{ room.hostName }}</span>
-            </p>
-            <p>
-              Тема: <span> {{ getTopicTitle(room?.topicId ?? '') }}</span>
-            </p>
-            <p>
-              Участников: <span> {{ room.memberCount }}</span>
-            </p>
-            <p>
-              Макс. кол-во участников: <span> {{ room.maxMembers }}</span>
-            </p>
-            <p>
-              Статус: <span :class="getRoomStatusClass(room.status)"> {{ room.status }}</span>
-            </p>
-            <button @click="joinRoom(room.roomId)">Присоединиться</button>
+      <div class="online-mini-game-container">
+        <div class="online-mini-game-interface" v-if="!isLoading && !isJoinedToRoom">
+          <h3>Комнаты:</h3>
+          <div v-if="rooms.length === 0 && !isLoading">
+            <p>Нет активных комнат</p>
           </div>
-        </template>
 
-        <template v-if="!isLoading">
-          <p class="online-mini-game-description">Выберите тему и создайте комнату для игры</p>
-          <div v-if="!isLoading" ref="topicsListEl" class="online-mini-game-content">
-            <div
-              v-for="topic in topics"
-              :key="topic.id"
-              class="online-mini-game-content-item"
-              @click="(e) => chooseTopic(e, topic.id)"
-            >
-              {{ topic.title }}
+          <template v-if="rooms.length > 0">
+            <div v-for="room in rooms" :key="room.roomId" class="online-mini-game-room">
+              <!-- <h3>ID комнаты: {{ room.id }}</h3> -->
+              <p>
+                Хост: <span> {{ room.hostName }}</span>
+              </p>
+              <p>
+                Тема: <span> {{ getTopicTitle(room?.topicId ?? '') }}</span>
+              </p>
+              <p>
+                Участников: <span> {{ room.memberCount }}</span>
+              </p>
+              <p>
+                Макс. кол-во участников: <span> {{ room.maxMembers }}</span>
+              </p>
+              <p>
+                Статус: <span :class="getRoomStatusClass(room.status)"> {{ room.status }}</span>
+              </p>
+              <button @click="joinRoom(room.roomId)">Присоединиться</button>
             </div>
+          </template>
+
+          <template v-if="!isLoading">
+            <p class="online-mini-game-description">Выберите тему и создайте комнату для игры</p>
+            <div v-if="!isLoading" ref="topicsListEl" class="online-mini-game-content">
+              <div
+                v-for="topic in topics"
+                :key="topic.id"
+                class="online-mini-game-content-item"
+                @click="(e) => chooseTopic(e, topic.id)"
+              >
+                {{ topic.title }}
+              </div>
+            </div>
+            <button
+              :disabled="selectedTopicId === null || isSubmittingTopic"
+              class="online-mini-game-content-button"
+              @click="selectTopic"
+            >
+              Cоздать комнату и войти
+            </button>
+          </template>
+        </div>
+        <RoomView
+          v-if="isJoinedToRoom"
+          :room="currentRoom"
+          :socket="socket"
+          @goBack="backToRooms"
+          @updateLeaderboard="updateLeaderboard"
+        />
+        <div class="online-mini-game-leaderboard" v-if="!isLoading">
+          <h3>Таблица рекордов &#127942;</h3>
+          <div class="online-mini-game-leaderboard-item" style="font-size: 14px; font-weight: 600">
+            <span class="online-mini-game-leaderboard-item-rank">Место</span>
+            <span class="online-mini-game-leaderboard-item-name">User</span>
+            <span class="online-mini-game-leaderboard-item-points">Очки</span>
+            <span class="online-mini-game-leaderboard-item-date">Дата рекорда</span>
           </div>
-          <button
-            :disabled="selectedTopicId === null || isSubmittingTopic"
-            class="online-mini-game-content-button"
-            @click="selectTopic"
-          >
-            Cоздать комнату и войти
-          </button>
-        </template>
+          <ul class="online-mini-game-leaderboard-list">
+            <li
+              class="online-mini-game-leaderboard-item"
+              v-for="(leader, index) in leaderboard"
+              :key="leader.id"
+            >
+              <span class="online-mini-game-leaderboard-item-rank"> {{ index + 1 }}. </span>
+              <span class="online-mini-game-leaderboard-item-name">{{ leader.userEmail }}</span>
+              <span class="online-mini-game-leaderboard-item-points">{{ leader.points }}</span>
+              <span class="online-mini-game-leaderboard-item-date">{{ leader.gameDate }}</span>
+            </li>
+          </ul>
+        </div>
       </div>
-      <RoomView v-if="isJoinedToRoom" :room="currentRoom" :socket="socket" @goBack="backToRooms" />
     </div>
   </div>
 </template>
@@ -61,13 +90,18 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import RoomView from './RoomView.vue'
-import { getAllTopics } from '@/api/requests'
+import { getAllTopics, getLeaderboard, getAllPublicRooms } from '@/api/requests'
 import GearSpinner from '@/components/Spinner/GearSpinner.vue'
 import type { ITopicData } from '@/types/types'
 import { io } from 'socket.io-client'
-import { getAllPublicRooms } from '@/api/requests'
-import type { IPublicRoomDto, IRoomResponse, RoomCreatedEvent, IRoom } from '@/types/types'
-import { useAuthStore } from '@/stores/auth'
+
+import type {
+  IPublicRoomDto,
+  IRoomResponse,
+  RoomCreatedEvent,
+  IRoom,
+  LeaderboardPayload,
+} from '@/types/types'
 
 defineOptions({
   name: 'OnlineMiniGame',
@@ -87,7 +121,7 @@ const accessToken = localStorage.getItem('access-token') ?? ''
 const currentRoom = ref<IRoomResponse | null>(null)
 const ROOM_ID_KEY = 'current-room-id'
 const currentRoomId = ref<string | null>(sessionStorage.getItem(ROOM_ID_KEY))
-
+const leaderboard = ref<LeaderboardPayload[]>([])
 const socket = io('http://localhost:3000/game', {
   autoConnect: false,
   forceNew: true,
@@ -95,7 +129,6 @@ const socket = io('http://localhost:3000/game', {
   auth: { token: `Bearer ${accessToken}` },
 })
 
-const authStore = useAuthStore()
 function setCurrentRoomId(roomId: string | null) {
   currentRoomId.value = roomId
   if (roomId) {
@@ -105,13 +138,24 @@ function setCurrentRoomId(roomId: string | null) {
   }
 }
 
+async function updateLeaderboard() {
+  try {
+    const leadersResponse = await getLeaderboard()
+    leaderboard.value = leadersResponse
+  } catch (error) {
+    console.error('Ошибка! Не удалось обновить таблицу рекордов', error)
+  }
+}
+
 onMounted(async () => {
   isLoading.value = true
-  await authStore.refreshTokens()
+
   try {
     const topicsResponse = await getAllTopics()
     topics.value = topicsResponse.data.data
     const roomsResponse = await getAllPublicRooms()
+    const leadersResponse = await getLeaderboard()
+    leaderboard.value = leadersResponse
 
     rooms.value = roomsResponse.data.map(
       (room: IPublicRoomDto): IRoom => ({

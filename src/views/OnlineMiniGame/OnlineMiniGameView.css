@@ -25,6 +25,7 @@
   z-index: 0;
 }
 .online-mini-game-wrapper {
+  box-sizing: border-box;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -37,7 +38,7 @@
   width: 1200px;
   min-width: 320px;
   background: #f5f0e6;
-  padding: 12px;
+  padding: 20px;
   border: 3px solid #6b5344;
   border-radius: 2px;
   box-shadow:
@@ -161,4 +162,67 @@
 
 .room-status-finished {
   color: #e74c3c;
+}
+
+.online-mini-game-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.online-mini-game-interface {
+  width: 60%;
+}
+
+.online-mini-game-leaderboard {
+  width: 30%;
+  border: 2px solid #6b5344;
+  padding: 10px;
+  overflow-y: auto;
+  border-radius: 2px;
+  min-height: 660px;
+}
+
+.online-mini-game-leaderboard-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.online-mini-game-leaderboard-item {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.online-mini-game-leaderboard-item span {
+  display: block;
+  margin-top: 5px;
+}
+.online-mini-game-leaderboard-item-rank {
+  width: 43px;
+  text-align: center;
+}
+.online-mini-game-leaderboard-item-name {
+  width: 150px;
+  text-align: center;
+}
+
+.online-mini-game-leaderboard h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #6b5344;
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.online-mini-game-container {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0px;
 }
