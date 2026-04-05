@@ -2,7 +2,8 @@
 import { ref, onMounted } from 'vue'
 import type { User } from '@/types'
 import { apiFetch } from '@/utils'
-import { patchUserName, patchUserAvatar } from '@/api/requests'
+import { patchUserName, patchUserAvatar, getLeaderboard } from '@/api/requests'
+import type { LeaderboardPayload } from '@/types/types'
 
 type UserStats = Record<string, string | number>
 
@@ -22,6 +23,9 @@ const progress = ref<UserProgress | null>(null)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+const leaderboard = ref<LeaderboardPayload[] | null>(null)
+const leaderboardError = ref<string | null>(null)
 
 const isEditingName = ref(false)
 const editedName = ref('')
@@ -62,6 +66,12 @@ onMounted(async () => {
     error.value = 'Не удалось загрузить данные профиля'
   } finally {
     loading.value = false
+  }
+
+  try {
+    leaderboard.value = await getLeaderboard()
+  } catch {
+    leaderboardError.value = 'Не удалось загрузить таблицу лидеров'
   }
 })
 
@@ -372,6 +382,38 @@ async function confirmEdit() {
         </template>
       </section>
     </div>
+
+    <!-- Leaderboard -->
+    <section class="profile__leaderboard">
+      <h2 class="profile__section-title">Таблица рекордов &#127942;</h2>
+      <p v-if="leaderboardError" class="profile__error">{{ leaderboardError }}</p>
+      <table v-else-if="leaderboard && leaderboard.length" class="profile__lb-table">
+        <thead>
+          <tr>
+            <th class="profile__lb-th profile__lb-th--rank">#</th>
+            <th class="profile__lb-th">Player</th>
+            <th class="profile__lb-th profile__lb-th--num">Points</th>
+            <th class="profile__lb-th profile__lb-th--num">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(entry, index) in leaderboard"
+            :key="entry.id"
+            class="profile__lb-row"
+            :class="{ 'profile__lb-row--me': entry.userId === profile?.id }"
+          >
+            <td class="profile__lb-td profile__lb-td--rank">{{ index + 1 }}</td>
+            <td class="profile__lb-td">{{ entry.userEmail }}</td>
+            <td class="profile__lb-td profile__lb-td--num">{{ entry.points }}</td>
+            <td class="profile__lb-td profile__lb-td--num">
+              {{ new Date(entry.gameDate).toLocaleDateString('ru-RU') }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else-if="leaderboard" class="profile__loading">No entries yet.</p>
+    </section>
   </main>
 </template>
 
@@ -611,5 +653,54 @@ async function confirmEdit() {
   font-size: 0.75rem;
   opacity: 0.6;
   align-self: flex-end;
+}
+
+.profile__leaderboard {
+  margin-top: 2rem;
+  border: 1px solid rgba(107, 83, 68, 0.35);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.profile__lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.profile__lb-th {
+  text-align: left;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid rgba(107, 83, 68, 0.2);
+}
+
+.profile__lb-th--rank,
+.profile__lb-td--rank {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.profile__lb-th--num,
+.profile__lb-td--num {
+  text-align: right;
+}
+
+.profile__lb-td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(107, 83, 68, 0.1);
+}
+
+.profile__lb-row--me {
+  background: rgba(107, 83, 68, 0.08);
+  font-weight: 600;
+}
+
+.profile__lb-row:last-child .profile__lb-td {
+  border-bottom: none;
 }
 </style>

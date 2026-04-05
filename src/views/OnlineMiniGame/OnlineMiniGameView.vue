@@ -102,12 +102,14 @@ import type {
   IRoom,
   LeaderboardPayload,
 } from '@/types/types'
+import { useAuthStore } from '@/stores/auth'
 
 defineOptions({
   name: 'OnlineMiniGame',
 })
 
 const router = useRouter()
+const authStore = useAuthStore()
 const topics = ref<Array<ITopicData>>([])
 const isLoading = ref<boolean>(false)
 const selectedTopicId = ref<string | null>(null)
@@ -116,17 +118,32 @@ const topicsListEl = ref<HTMLElement | null>(null)
 const isJoinedToRoom = ref<boolean>(false)
 const isSubmittingTopic = ref<boolean>(false)
 const rooms = ref<IRoom[]>([])
-const accessToken = localStorage.getItem('access-token') ?? ''
 //IRoomResponse
 const currentRoom = ref<IRoomResponse | null>(null)
 const ROOM_ID_KEY = 'current-room-id'
 const currentRoomId = ref<string | null>(sessionStorage.getItem(ROOM_ID_KEY))
 const leaderboard = ref<LeaderboardPayload[]>([])
-const socket = io('https://d2f36jw82673f6.cloudfront.net/game', {
+
+async function getFreshToken(): Promise<string> {
+  const expiresAt = Number(localStorage.getItem('token-expires-at') ?? 0)
+  if (Date.now() >= expiresAt - 30_000) {
+    const refreshed = await authStore.refreshTokens()
+    if (!refreshed) {
+      router.replace({ name: 'login' })
+      return ''
+    }
+  }
+  return localStorage.getItem('access-token') ?? ''
+}
+
+const socket = io(import.meta.env.VITE_GAME_URL, {
   autoConnect: false,
   forceNew: true,
   transports: ['websocket', 'polling'],
-  auth: { token: `Bearer ${accessToken}` },
+  auth: async (cb: (data: { token: string }) => void) => {
+    const token = await getFreshToken()
+    cb({ token: `Bearer ${token}` })
+  },
 })
 
 function setCurrentRoomId(roomId: string | null) {
