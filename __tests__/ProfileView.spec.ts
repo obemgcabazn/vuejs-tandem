@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
+import { setActivePinia, createPinia } from 'pinia'
 import ProfileView from '@/views/ProfileView.vue'
 
 const { apiFetchMock, patchUserNameMock, patchUserAvatarMock, getLeaderboardMock } = vi.hoisted(
@@ -97,6 +98,7 @@ function setupMocks(profileOverride: Partial<typeof mockProfile> = {}) {
 describe('ProfileView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    setActivePinia(createPinia())
   })
 
   // --- Состояния загрузки / ошибки ---
@@ -106,7 +108,7 @@ describe('ProfileView', () => {
     getLeaderboardMock.mockReturnValue(new Promise(() => {}))
     const wrapper = mount(ProfileView)
     await nextTick() // ждём обновления DOM после loading.value = true
-    expect(wrapper.text()).toContain('Loading...')
+    expect(wrapper.text()).toContain('Загрузка...')
   })
 
   it('показывает сообщение об ошибке, если API недоступен', async () => {
@@ -306,6 +308,6 @@ describe('ProfileView', () => {
     getLeaderboardMock.mockResolvedValue([])
     const wrapper = mount(ProfileView)
     await flushPromises()
-    expect(wrapper.text()).toContain('No entries yet')
+    expect(wrapper.text()).toContain('Записей пока нет.')
   })
 })

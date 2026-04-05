@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import { setActivePinia, createPinia } from 'pinia'
 import LoginView from '@/views/LoginView.vue'
 
 type AuthMock = {
@@ -32,6 +33,7 @@ vi.mock('vue-router', () => ({
 describe('LoginView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    setActivePinia(createPinia())
     authMock.isAuthenticated = false
     authMock.loading = false
     authMock.error = null
