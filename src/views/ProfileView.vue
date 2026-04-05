@@ -422,6 +422,7 @@ async function confirmEdit() {
   max-width: 1100px;
   margin: 2rem auto;
   padding: 0 1rem;
+  color: var(--text-primary);
 }
 
 .profile__title {
@@ -452,7 +453,8 @@ async function confirmEdit() {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  border: 1px solid rgba(107, 83, 68, 0.35);
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
   border-radius: 8px;
   padding: 1.5rem;
 }
@@ -460,6 +462,7 @@ async function confirmEdit() {
 .profile__section-title {
   font-size: 1rem;
   font-weight: 600;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
@@ -471,13 +474,14 @@ async function confirmEdit() {
 
 .profile__label {
   font-size: 0.75rem;
-  opacity: 0.6;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .profile__value {
   font-size: 1rem;
+  color: var(--text-primary);
 }
 
 .profile__editable {
@@ -493,13 +497,13 @@ async function confirmEdit() {
   border: none;
   border-bottom: 1px solid transparent;
   padding: 0.1rem 0;
-  color: inherit;
+  color: var(--text-primary);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .profile__input:not(:disabled) {
-  border-bottom-color: rgba(107, 83, 68, 0.5);
+  border-bottom-color: var(--border-primary);
 }
 
 .profile__input:disabled {
@@ -515,8 +519,8 @@ async function confirmEdit() {
   border: none;
   cursor: pointer;
   padding: 0.2rem;
-  color: inherit;
-  opacity: 0.5;
+  color: var(--text-muted);
+  opacity: 0.7;
   transition: opacity 0.2s;
   flex-shrink: 0;
 }
@@ -558,7 +562,7 @@ async function confirmEdit() {
   border-radius: 50%;
   object-fit: cover;
   display: block;
-  border: 2px solid rgba(107, 83, 68, 0.35);
+  border: 2px solid var(--border-secondary);
 }
 
 .profile__avatar-initials {
@@ -568,11 +572,12 @@ async function confirmEdit() {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(107, 83, 68, 0.15);
-  border: 2px solid rgba(107, 83, 68, 0.35);
+  background: var(--bg-stat);
+  border: 2px solid var(--border-secondary);
   font-size: 2rem;
   font-weight: 600;
   text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .profile__avatar-edit-btn {
@@ -581,7 +586,7 @@ async function confirmEdit() {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(107, 83, 68, 0.7);
+  background: var(--border-primary);
   border: none;
   cursor: pointer;
   display: flex;
@@ -632,32 +637,33 @@ async function confirmEdit() {
 
 .profile__progress-fraction {
   font-size: 0.8rem;
-  opacity: 0.7;
+  color: var(--text-muted);
 }
 
 .profile__progress-bar {
   height: 6px;
   border-radius: 3px;
-  background: rgba(107, 83, 68, 0.15);
+  background: var(--bg-progress);
   overflow: hidden;
 }
 
 .profile__progress-fill {
   height: 100%;
   border-radius: 3px;
-  background: rgba(107, 83, 68, 0.7);
+  background: var(--progress-fill);
   transition: width 0.3s ease;
 }
 
 .profile__progress-percent {
   font-size: 0.75rem;
-  opacity: 0.6;
+  color: var(--text-muted);
   align-self: flex-end;
 }
 
 .profile__leaderboard {
   margin-top: 2rem;
-  border: 1px solid rgba(107, 83, 68, 0.35);
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
   border-radius: 8px;
   padding: 1.5rem;
 }
@@ -672,11 +678,11 @@ async function confirmEdit() {
 .profile__lb-th {
   text-align: left;
   font-size: 0.75rem;
-  opacity: 0.6;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 0.4rem 0.75rem;
-  border-bottom: 1px solid rgba(107, 83, 68, 0.2);
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 .profile__lb-th--rank,
@@ -692,11 +698,12 @@ async function confirmEdit() {
 
 .profile__lb-td {
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid rgba(107, 83, 68, 0.1);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 .profile__lb-row--me {
-  background: rgba(107, 83, 68, 0.08);
+  background: var(--bg-stat);
   font-weight: 600;
 }
 

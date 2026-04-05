@@ -23,8 +23,8 @@
   position: relative;
   max-width: 480px;
   width: 90%;
-  background: #faf6ee;
-  border: 3px solid #6b5344;
+  background: var(--bg-sidebar);
+  border: 3px solid var(--border-primary);
   padding: 24px 28px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
@@ -40,7 +40,7 @@
   background: transparent;
   font-size: 28px;
   line-height: 1;
-  color: #6b5344;
+  color: var(--text-muted);
   cursor: pointer;
   transition: color 0.2s;
 }
@@ -61,5 +61,5 @@
   margin: 0 0 24px;
   font-size: 15px;
   line-height: 1.5;
-  color: #3d3229;
+  color: var(--text-secondary);
 }

@@ -17,12 +17,12 @@
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
-  color: #3d3229;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 16px;
 }
 .code-block-task-parts {
-  color: #000000;
+  color: var(--text-primary);
   font-weight: 700;
 }
 .code-block-input textarea {
@@ -30,11 +30,11 @@
   height: 250px;
   outline: none;
   padding: 10px;
-  border: 2px solid #8b7355;
+  border: 2px solid var(--border-heading);
   border-radius: 8px;
   font-size: 16px;
   font-weight: 400;
-  color: #3d3229;
+  color: var(--text-secondary);
   color:rgb(46, 0, 172);
 }
 

@@ -5,7 +5,7 @@
   justify-content: flex-start;
   align-items: center;
   padding: 52px 20px 20px;
-  background-color: #e8e2d5;
+  background-color: var(--bg-page);
   background-image: url(/main-background.jpg);
   background-size: cover;
   background-position: center;
@@ -13,6 +13,7 @@
   background-repeat: no-repeat;
   position: relative;
 }
+
 .page-layout-online-mini-game::after {
   content: '';
   position: fixed;
@@ -20,10 +21,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(232, 226, 213, 0.35);
+  background: var(--page-overlay);
   pointer-events: none;
   z-index: 0;
 }
+
 .online-mini-game-wrapper {
   box-sizing: border-box;
   position: relative;
@@ -31,70 +33,69 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-
   z-index: 10;
   min-height: 660px;
-  /* max-width: 1200px; */
   width: 1200px;
   min-width: 320px;
-  background: #f5f0e6;
+  background: var(--bg-card);
   padding: 20px;
-  border: 3px solid #6b5344;
+  border: 3px solid var(--border-primary);
   border-radius: 2px;
   box-shadow:
     inset 0 0 0 1px rgba(107, 83, 68, 0.3),
-    4px 4px 0 rgba(0, 0, 0, 0.08);
+    4px 4px 0 var(--shadow-card);
 }
+
 .online-mini-game-title {
   position: relative;
   font-size: 24px;
   font-weight: 600;
-  color: rgb(0, 0, 0);
+  color: var(--text-primary);
   text-align: center;
   margin-bottom: 20px;
 }
+
 .online-mini-game-subtitle {
   position: relative;
   font-size: 18px;
   font-weight: 400;
-  color: rgb(0, 43, 0);
+  color: var(--text-secondary);
   text-align: center;
 }
+
 .online-mini-game-description {
   position: relative;
   font-size: 20px;
   font-weight: 500;
-  color: rgb(0, 43, 0);
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 20px;
 }
+
 .online-mini-game-content {
   position: relative;
   display: flex;
   justify-content: flex-between;
   align-items: center;
 }
+
 .online-mini-game-content-item {
-  border-color: #5a8c4a;
-  color: #2d5016;
-  background: linear-gradient(180deg, #c8e6c9, #a5d6a7);
-  border: 2px solid;
+  border: 2px solid var(--border-primary);
+  color: var(--text-secondary);
+  background: var(--bg-stat);
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-  background: #f5f0e6;
   padding: 10px;
   margin: 0px 5px;
   transition: all 0.3s ease;
 }
+
 .online-mini-game-content-item:hover {
-  transition: all 0.3s ease;
   transform: scale(1.05);
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 }
+
 .online-mini-game-content-item.active {
   background-color: #5a8c4a;
   color: #f5f0e6;
@@ -123,13 +124,14 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  border: 2px solid #6b5344;
+  border: 2px solid var(--border-primary);
   padding: 5px;
   margin: 10px auto;
   border-radius: 2px;
-  background: #f5f0e6;
+  background: var(--bg-stat);
   width: 98%;
   min-width: 320px;
+  color: var(--text-secondary);
 }
 
 .online-mini-game-room p,
@@ -140,13 +142,12 @@
 
 .online-mini-game-room button {
   display: block;
-  border: 2px solid #6b5344;
+  border: 2px solid var(--border-primary);
   color: #2d5016;
   background: linear-gradient(180deg, #c8e6c9, #a5d6a7);
   transition: all 0.3s ease;
   padding: 5px;
   margin: 10px auto;
-  border: 2px solid;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
@@ -169,6 +170,9 @@
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0px;
 }
 
 .online-mini-game-interface {
@@ -177,11 +181,12 @@
 
 .online-mini-game-leaderboard {
   width: 30%;
-  border: 2px solid #6b5344;
+  border: 2px solid var(--border-primary);
   padding: 10px;
   overflow-y: auto;
   border-radius: 2px;
   min-height: 660px;
+  color: var(--text-primary);
 }
 
 .online-mini-game-leaderboard-list {
@@ -203,10 +208,12 @@
   display: block;
   margin-top: 5px;
 }
+
 .online-mini-game-leaderboard-item-rank {
   width: 43px;
   text-align: center;
 }
+
 .online-mini-game-leaderboard-item-name {
   width: 150px;
   text-align: center;
@@ -215,14 +222,8 @@
 .online-mini-game-leaderboard h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #6b5344;
+  color: var(--text-muted);
   text-align: center;
   margin-bottom: 10px;
   margin-top: 0;
-}
-
-.online-mini-game-container {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0px;
 }

@@ -1,10 +1,10 @@
 .cab-and-electronics-title {
   margin: 0 0 16px;
   padding-bottom: 8px;
-  color: #3d3229;
+  color: var(--text-secondary);
   font-size: 20px;
   font-weight: 700;
-  border-bottom: 2px solid #8b7355;
+  border-bottom: 2px solid var(--border-heading);
   letter-spacing: 0.02em;
   text-align: center;
 }
@@ -28,7 +28,7 @@
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
-  color: #3d3229;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 16px;
 }
@@ -45,7 +45,7 @@
   border-radius: 8px;
   font-size: 16px;
   font-weight: 400;
-  color: #3d3229;
+  color: var(--text-secondary);
 }
 
 .code-check-ok {

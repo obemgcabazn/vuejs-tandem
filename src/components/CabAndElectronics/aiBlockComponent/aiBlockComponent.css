@@ -17,46 +17,46 @@
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
-  color: #3d3229;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 16px;
 }
 .ai-block-task-parts {
-  color: #000000;
+  color: var(--text-primary);
   font-weight: 700;
 }
 .ai-block-answer-input {
   margin-top: 10px;
   width: 100% ;
   outline: none;
-  border: 2px solid #8b7355 !important;
+  border: 2px solid var(--border-heading) !important;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 400;
-  color: #3d3229;
+  color: var(--text-secondary);
 }
 
 /* Quill: */
 .ai-block-quill-root :deep(.ql-container) {
   min-height: 220px;
-  border: 2px solid #8b7355;
+  border: 2px solid var(--border-heading);
   border-radius: 8px;
 }
 
 .ql-toolbar~.ql-snow {
-  border: 2px solid #8b7355 !important;
+  border: 2px solid var(--border-heading) !important;
   border-radius: 8px;
 }
 
 .ai-block-quill-root :deep(.ql-toolbar)  {
-    border: 2px solid #8b7355 !important;
+    border: 2px solid var(--border-heading) !important;
     border-radius: 8px;
   
 }
 
 .ai-block-quill-root :deep(.ql-editor) {
   min-height: 200px;
-  color: #3d3229;
+  color: var(--text-secondary);
 }
 
 .ai-check-ok {

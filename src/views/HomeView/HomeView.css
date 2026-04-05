@@ -4,7 +4,7 @@
   flex-direction: column;
   padding-top: 52px;
   padding: 52px 20px 20px;
-  background-color: #e8e2d5;
+  background-color: var(--bg-page);
   background-image: url('/main-background.jpg');
   background-size: cover;
   background-position: center;
@@ -20,7 +20,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(232, 226, 213, 0.35);
+  background: var(--page-overlay);
   pointer-events: none;
   z-index: 0;
 }
@@ -39,13 +39,13 @@
 .svg-container {
   flex: 1;
   min-width: 320px;
-  background: #f5f0e6;
+  background: var(--bg-card);
   padding: 12px;
-  border: 3px solid #6b5344;
+  border: 3px solid var(--border-primary);
   border-radius: 2px;
   box-shadow:
     inset 0 0 0 1px rgba(107, 83, 68, 0.3),
-    4px 4px 0 rgba(0, 0, 0, 0.08);
+    4px 4px 0 var(--shadow-card);
 }
 
 .photo-wrapper {

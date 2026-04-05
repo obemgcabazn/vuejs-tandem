@@ -2,6 +2,92 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 
+:root {
+  --bg-page: #e8e2d5;
+  --bg-card: #f5f0e6;
+  --bg-sidebar: #faf6ee;
+  --bg-stat: #f0ebe0;
+  --bg-input: #faf6ee;
+  --bg-progress: #e0d9cc;
+
+  --text-primary: #1a1612;
+  --text-secondary: #3d3229;
+  --text-muted: #6b5344;
+  --text-placeholder: #9a8b7a;
+  --text-footer: #e5e5e5;
+
+  --border-primary: #6b5344;
+  --border-secondary: #d4cdc0;
+  --border-heading: #8b7355;
+
+  --nav-bg: rgba(26, 22, 18, 0.92);
+  --nav-text: #f0e8dc;
+  --nav-text-muted: #b8a898;
+  --nav-border: rgba(107, 83, 68, 0.4);
+  --nav-hover-bg: rgba(107, 83, 68, 0.3);
+  --nav-active-bg: rgba(107, 83, 68, 0.45);
+  --nav-login-bg: #6b5344;
+  --nav-login-hover: #8b7355;
+
+  --page-overlay: rgba(232, 226, 213, 0.35);
+  --shadow-card: rgba(0, 0, 0, 0.08);
+  --shadow-dark: rgba(0, 0, 0, 0.1);
+
+  --btn-disabled-bg: #e0d9cc;
+  --btn-disabled-text: #9a8b7a;
+  --btn-disabled-border: #9a8b7a;
+  --btn-neutral-from: #f5f0e6;
+  --btn-neutral-to: #e8e2d5;
+  --btn-neutral-hover: #d4cdc0;
+  --btn-neutral-text: #3d3229;
+  --btn-neutral-border: #6b5344;
+
+  --progress-fill: #6b5344;
+}
+
+html.dark {
+  --bg-page: #1a1612;
+  --bg-card: #2a231c;
+  --bg-sidebar: #231e1a;
+  --bg-stat: #1f1916;
+  --bg-input: #231e1a;
+  --bg-progress: #4a3c30;
+
+  --text-primary: #f0e8dc;
+  --text-secondary: #c8b8a8;
+  --text-muted: #8b7355;
+  --text-placeholder: #6b5344;
+  --text-footer: #6b5344;
+
+  --border-primary: #4a3c30;
+  --border-secondary: #3d3229;
+  --border-heading: #5a4535;
+
+  --nav-bg: rgba(10, 8, 6, 0.95);
+  --nav-text: #f0e8dc;
+  --nav-text-muted: #7a6a5a;
+  --nav-border: rgba(74, 60, 48, 0.5);
+  --nav-hover-bg: rgba(74, 60, 48, 0.4);
+  --nav-active-bg: rgba(74, 60, 48, 0.6);
+  --nav-login-bg: #4a3c30;
+  --nav-login-hover: #6b5344;
+
+  --page-overlay: rgba(0, 0, 0, 0.5);
+  --shadow-card: rgba(0, 0, 0, 0.3);
+  --shadow-dark: rgba(0, 0, 0, 0.4);
+
+  --btn-disabled-bg: #2a231c;
+  --btn-disabled-text: #6b5344;
+  --btn-disabled-border: #4a3c30;
+  --btn-neutral-from: #2a231c;
+  --btn-neutral-to: #231e1a;
+  --btn-neutral-hover: #1a1612;
+  --btn-neutral-text: #c8b8a8;
+  --btn-neutral-border: #4a3c30;
+
+  --progress-fill: #b8956a;
+}
+
 @font-face {
   font-family: 'SoyuzGrotesk';
   src: url('/fonts/SoyuzGroteskBold.ttf') format('truetype'),
@@ -9,6 +95,12 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
 }
 
 body * {
