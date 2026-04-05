@@ -112,18 +112,6 @@ export interface ITask {
   xpReward: number
 }
 
-// export interface Room {
-//   id: string
-//   hostId: string
-//   members: Map<string, RoomMember>
-//   isPrivate: boolean // NEW
-//   status: 'waiting' | 'in_progress' | 'finished'
-//   topicId: string | null
-//   currentTaskIndex: number
-//   createdAt: Date
-//   lastActivityAt: Date
-// }
-
 export interface IPublicRoomResponse {
   data: IPublicRoomDto[]
   timestamp: string
@@ -199,4 +187,20 @@ export interface ITaskCompletedScore {
 
 export interface ITaskFinishedScore extends ITaskCompletedScore {
   rank: number
+}
+
+export interface LeaderboardPayload {
+  id: string
+  userId: string
+  userEmail: string
+  points: number
+  gameDate: string
+  createdAt: Date
+}
+
+export interface PostToLeaderboard {
+  userId: string
+  userEmail: string
+  points: number
+  date: string
 }

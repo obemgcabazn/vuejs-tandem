@@ -1,6 +1,6 @@
 <template>
   <div class="room-view">
-    <h2 class="room-view-title">Комната: {{ props.room?.roomId }}</h2>
+    <h2 class="room-view-title">ID комнаты: {{ props.room?.roomId }}</h2>
     <div class="room-view-content">
       <h3>Участники:</h3>
       <ul class="room-view-members">
@@ -65,7 +65,9 @@ import type {
   IRoomMember,
   ITaskCompletedScore,
   ITaskFinishedScore,
+  PostToLeaderboard,
 } from '@/types/types'
+import { postToLeaderboard } from '@/api/requests'
 import type { Socket } from 'socket.io-client'
 
 const isGameStarted = ref<boolean>(false)
@@ -84,7 +86,7 @@ const props = defineProps<{
   socket: Socket
 }>()
 const members = ref<IRoomMember[]>(props.room?.members ?? [])
-const emit = defineEmits(['goBack'])
+const emit = defineEmits(['goBack', 'updateLeaderboard'])
 watch(
   () => props.room?.members,
   (newMembers) => {
@@ -110,7 +112,7 @@ onMounted(() => {
     }))
   })
 
-  props.socket.on('game:finished', (payload) => {
+  props.socket.on('game:finished', async (payload) => {
     isGameWaiting.value = false
     members.value = payload.results.map((score: ITaskFinishedScore) => ({
       userId: score.userId,
@@ -121,10 +123,25 @@ onMounted(() => {
     }))
     winnerName.value = members.value.find((member) => member.rank === 1)?.name ?? ''
     winnerScore.value = members.value.find((member) => member.rank === 1)?.score ?? 0
-    isGameStarted.value = false
-    isGameFinished.value = true
-    gameTask.value = null
-    answer.value = ''
+    const winner: PostToLeaderboard = {
+      userId: members.value.find((member) => member.rank === 1)?.userId ?? '',
+      userEmail: winnerName.value,
+      points: winnerScore.value,
+      date: new Date().toISOString(),
+    }
+    try {
+      const response = await postToLeaderboard(winner)
+      if (response.ok) {
+        emit('updateLeaderboard')
+      }
+    } catch (error) {
+      console.error('Ошибка! Не удалось добавить победителя в таблицу рекордов', error)
+    } finally {
+      isGameStarted.value = false
+      isGameFinished.value = true
+      gameTask.value = null
+      answer.value = ''
+    }
   })
 })
 

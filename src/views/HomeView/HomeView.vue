@@ -16,23 +16,24 @@ const gameStore = useGameStore()
 const showFirstMessage = ref(true)
 const isGameStarted = ref(false)
 const isCabElectroniksZone = ref(false)
-
+const currentZoneId = ref<number>(0)
 function startAssembly() {
   gameStore.startAssembly()
 }
 
 function onZoneClick(zoneId: number) {
-  if (zoneId === 3) {
-    gameStore.setZoneInProgress(zoneId)
-    isGameStarted.value = true
-    isCabElectroniksZone.value = true
-    return
-  } else {
-    if (!gameStore.setZoneInProgress(zoneId)) return
-    setTimeout(() => {
-      gameStore.setZoneCompleted(zoneId)
-    }, 2000)
-  }
+  // if (zoneId === 3) {
+  gameStore.setZoneInProgress(zoneId)
+  currentZoneId.value = zoneId
+  isGameStarted.value = true
+  isCabElectroniksZone.value = true
+  return
+  // } else {
+  //   if (!gameStore.setZoneInProgress(zoneId)) return
+  //   setTimeout(() => {
+  //     gameStore.setZoneCompleted(zoneId)
+  //   }, 2000)
+  // }
 }
 
 function closeFirstMessage() {
@@ -79,8 +80,9 @@ function onCabAndElectronicsFinished() {
           />
         </div>
       </div>
-      <GameContainer v-else>
+      <GameContainer v-else-if="isCabElectroniksZone">
         <CabAndElectronics
+          :zoneID="currentZoneId"
           v-if="isCabElectroniksZone"
           @CabAndElectronicsFinished="onCabAndElectronicsFinished"
         />
