@@ -42,6 +42,12 @@ defineOptions({
 const props = defineProps<{
   questionProperty: ITask
 }>()
+const emit = defineEmits<{
+  (e: 'correctAnswer'): void
+  (e: 'incorrectAnswer'): void
+  (e: 'nextQuestion'): void
+  (e: 'incorrectAnswer'): void
+}>()
 
 function selectVariant(variant: string) {
   selectedVariant.value = variant
@@ -91,17 +97,11 @@ async function checkAnswer() {
 
     const score = Number(result.score ?? 0)
     const feedback = result.feedback ?? 'Ответ проверен'
-    // const vasilkiCount = result.zoneProgress?.vasilkiCount
-    const errorCount = result.zoneProgress?.errorCount
 
     if (score > 50) {
       isCorrect.value = true
       codeCheckSuccess.value = true
       codeCheckMessage.value = feedback
-
-      // if (typeof vasilkiCount === 'number') {
-      //   gameStore.setVasilki(vasilkiCount)
-      // }
       gameStore.addVasilki()
     } else {
       isCorrect.value = false
@@ -119,10 +119,7 @@ async function checkAnswer() {
         console.error('Не удалось получить подсказку')
         return
       }
-
-      if (typeof errorCount === 'number') {
-        gameStore.setError(errorCount)
-      }
+      incorrectAnswer()
     }
   } catch (error) {
     console.error('Ошибка при проверке ответа:', error)
@@ -139,11 +136,10 @@ function nextQuestion() {
   codeCheckMessage.value = ''
   codeCheckSuccess.value = false
 }
-const emit = defineEmits<{
-  (e: 'correctAnswer'): void
-  (e: 'incorrectAnswer'): void
-  (e: 'nextQuestion'): void
-}>()
+
+function incorrectAnswer() {
+  emit('incorrectAnswer')
+}
 </script>
 
 <style lang="scss" scoped>
