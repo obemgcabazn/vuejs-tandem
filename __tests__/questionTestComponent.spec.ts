@@ -3,25 +3,18 @@ import { flushPromises, mount } from '@vue/test-utils'
 import QuestionTestComponent from '@/components/CabAndElectronics/questionTestComponent/questionTestComponent.vue'
 import type { ITask } from '@/types/types'
 
-const {
-  addVasilkiMock,
-  addErrorMock,
-  setErrorMock,
-  postToJudgeUsersAnswerMock,
-  postToJudgeForHintMock,
-} = vi.hoisted(() => ({
-  addVasilkiMock: vi.fn(),
-  addErrorMock: vi.fn(),
-  setErrorMock: vi.fn(),
-  postToJudgeUsersAnswerMock: vi.fn(),
-  postToJudgeForHintMock: vi.fn(),
-}))
+const { addVasilkiMock, addErrorMock, postToJudgeUsersAnswerMock, postToJudgeForHintMock } =
+  vi.hoisted(() => ({
+    addVasilkiMock: vi.fn(),
+    addErrorMock: vi.fn(),
+    postToJudgeUsersAnswerMock: vi.fn(),
+    postToJudgeForHintMock: vi.fn(),
+  }))
 
 vi.mock('@/stores/game', () => ({
   useGameStore: () => ({
     addVasilki: addVasilkiMock,
     addError: addErrorMock,
-    setError: setErrorMock,
   }),
 }))
 
@@ -134,6 +127,7 @@ describe('QuestionTestComponent', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Подсказка:')
-    expect(setErrorMock).toHaveBeenCalledWith(1)
+    // Ошибка учитывается в родителе (CabAndElectronics) через addError; компонент только эмитит событие
+    expect(wrapper.emitted('incorrectAnswer')).toHaveLength(1)
   })
 })

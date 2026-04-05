@@ -10,6 +10,7 @@ import FirstMessageModal from '@/components/FirstMessageModal/FirstMessageModal.
 import ConveyorModal from '@/components/ConveyorModal/ConveyorModal.vue'
 import GameContainer from '@/components/GameContainer/GameContainer.vue'
 import CabAndElectronics from '@/components/CabAndElectronics/CabAndElectronics.vue'
+import PenaltyComponent from '@/components/PenaltyComponent/PenaltyComponent.vue'
 
 const t = ru
 const gameStore = useGameStore()
@@ -17,23 +18,18 @@ const showFirstMessage = ref(true)
 const isGameStarted = ref(false)
 const isCabElectroniksZone = ref(false)
 const currentZoneId = ref<number>(0)
+const isPenaltyRound = ref(false)
+
 function startAssembly() {
   gameStore.startAssembly()
 }
 
 function onZoneClick(zoneId: number) {
-  // if (zoneId === 3) {
   gameStore.setZoneInProgress(zoneId)
   currentZoneId.value = zoneId
   isGameStarted.value = true
   isCabElectroniksZone.value = true
   return
-  // } else {
-  //   if (!gameStore.setZoneInProgress(zoneId)) return
-  //   setTimeout(() => {
-  //     gameStore.setZoneCompleted(zoneId)
-  //   }, 2000)
-  // }
 }
 
 function closeFirstMessage() {
@@ -56,6 +52,7 @@ function reset() {
   isCabElectroniksZone.value = false
   isGameStarted.value = false
   showFirstMessage.value = true
+  isPenaltyRound.value = false
 }
 
 function onCabAndElectronicsFinished() {
@@ -63,6 +60,10 @@ function onCabAndElectronicsFinished() {
   gameStore.errorCount = 0
   isCabElectroniksZone.value = false
   isGameStarted.value = false
+}
+
+function onPenaltyRound() {
+  isPenaltyRound.value = !isPenaltyRound.value
 }
 </script>
 
@@ -83,9 +84,11 @@ function onCabAndElectronicsFinished() {
       <GameContainer v-else-if="isCabElectroniksZone">
         <CabAndElectronics
           :zoneID="currentZoneId"
-          v-if="isCabElectroniksZone"
+          v-if="isCabElectroniksZone && !isPenaltyRound"
           @CabAndElectronicsFinished="onCabAndElectronicsFinished"
+          @penaltyRound="onPenaltyRound"
         />
+        <PenaltyComponent v-if="isPenaltyRound" @finishPenaltyRound="onPenaltyRound" />
       </GameContainer>
       <GameSidebar
         :zones="gameStore.zones"

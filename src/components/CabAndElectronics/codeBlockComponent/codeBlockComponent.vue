@@ -14,11 +14,6 @@
         placeholder="Ваш код..."
         :height="200"
       />
-      <!-- <textarea
-        class="code-block-input-textarea"
-        v-model="code"
-        placeholder="Ваш код..."
-      /> -->
       <p v-if="codeCheckMessage" :class="codeCheckSuccess ? 'code-check-ok' : 'code-check-error'">
         {{ codeCheckMessage }}
       </p>
@@ -63,6 +58,7 @@ const codeMirrorOptions = ref({
 
 const emit = defineEmits<{
   (e: 'nextTask'): void
+  (e: 'incorrectAnswer'): void
 }>()
 
 onMounted(async () => {
@@ -123,17 +119,11 @@ async function checkCode() {
 
     const score = Number(result.score ?? 0)
     const feedback = result.feedback ?? 'Ответ проверен'
-    // const vasilkiCount = result.zoneProgress?.vasilkiCount
-    const errorCount = result.zoneProgress?.errorCount
 
     if (score > 50) {
       isCorrect.value = true
       codeCheckSuccess.value = true
       codeCheckMessage.value = feedback
-
-      // if (typeof vasilkiCount === 'number') {
-      //   gameStore.setVasilki(vasilkiCount)
-      // }
       gameStore.addVasilki()
     } else {
       isCorrect.value = false
@@ -152,9 +142,7 @@ async function checkCode() {
         return
       }
 
-      if (typeof errorCount === 'number') {
-        gameStore.setError(errorCount)
-      }
+      incorrectAnswer()
     }
   } catch (error) {
     console.error('Ошибка при проверке ответа:', error)
@@ -164,6 +152,10 @@ async function checkCode() {
   } finally {
     isLoading.value = false
   }
+}
+
+function incorrectAnswer() {
+  emit('incorrectAnswer')
 }
 </script>
 

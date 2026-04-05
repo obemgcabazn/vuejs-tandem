@@ -8,8 +8,9 @@
     v-if="testBlock && currentQuestionData"
     :questionProperty="currentQuestionData"
     @nextQuestion="nextQuestion"
+    @incorrectAnswer="addError"
   />
-  <CodeBlockComponent v-if="codeBlock" @nextTask="nextTask" />
+  <CodeBlockComponent v-if="codeBlock" @nextTask="nextTask" @incorrectAnswer="addError" />
   <AiBlockComponent v-if="aiBlock" @correctAnswer="finishGame" @incorrectAnswer="addError" />
   <div v-if="!isGameFinished && !isLoading" class="mini-game-container">
     <button @click="finishGame" style="width: 230px; background: rgb(236, 193, 51)">
@@ -59,6 +60,7 @@ const miniGameSnake = ref<boolean>(false)
 const currentBlock = ref<TCurrentBlock>('test')
 const emit = defineEmits<{
   (e: 'CabAndElectronicsFinished'): void
+  (e: 'penaltyRound'): void
 }>()
 const props = defineProps<{
   zoneID: number
@@ -124,6 +126,9 @@ function nextQuestion() {
 
 function addError() {
   gameStore.addError()
+  if (gameStore.errorCount >= 2) {
+    emit('penaltyRound')
+  }
 }
 
 function finishGame() {
