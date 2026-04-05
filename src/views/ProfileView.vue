@@ -6,7 +6,15 @@ import { patchUserName, patchUserAvatar } from '@/api/requests'
 
 type UserStats = Record<string, string | number>
 
-type UserProgress = string[]
+type UserProgress = topicItem[]
+
+type topicItem = {
+  topicId: string
+  topicTitle: string
+  totalTasks: number
+  completedTasks: number
+  percentage: number
+}
 
 const profile = ref<User | null>(null)
 const stats = ref<UserStats | null>(null)
@@ -49,6 +57,7 @@ onMounted(async () => {
     editedAvatarUrl.value = profileData.avatarUrl ?? ''
     stats.value = statsData
     progress.value = progressData
+    console.log(progress.value)
   } catch {
     error.value = 'Не удалось загрузить данные профиля'
   } finally {
@@ -347,7 +356,20 @@ async function confirmEdit() {
       <!-- Progress -->
       <section class="profile__section">
         <h2 class="profile__section-title">Progress</h2>
-        <span class="profile__value">{{ progress != null ? progress.length / 4 : 0 }} %</span>
+        <template v-if="progress">
+          <div v-for="item in progress" :key="item.topicId" class="profile__progress-item">
+            <div class="profile__progress-header">
+              <span class="profile__label">{{ item.topicTitle }}</span>
+              <span class="profile__progress-fraction"
+                >{{ item.completedTasks }} / {{ item.totalTasks }}</span
+              >
+            </div>
+            <div class="profile__progress-bar">
+              <div class="profile__progress-fill" :style="{ width: item.percentage + '%' }" />
+            </div>
+            <span class="profile__progress-percent">{{ item.percentage }}%</span>
+          </div>
+        </template>
       </section>
     </div>
   </main>
@@ -552,5 +574,42 @@ async function confirmEdit() {
 .profile__avatar-actions {
   display: flex;
   gap: 0.25rem;
+}
+
+.profile__progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.profile__progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.profile__progress-fraction {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.profile__progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(107, 83, 68, 0.15);
+  overflow: hidden;
+}
+
+.profile__progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: rgba(107, 83, 68, 0.7);
+  transition: width 0.3s ease;
+}
+
+.profile__progress-percent {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  align-self: flex-end;
 }
 </style>
