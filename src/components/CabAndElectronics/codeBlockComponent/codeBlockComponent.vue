@@ -116,7 +116,7 @@ async function checkCode() {
 
     const data = await response.json()
     const result = data?.data
-    console.log(data)
+
     if (!result) {
       throw new Error('Некорректный формат ответа сервера')
     }
@@ -146,8 +146,6 @@ async function checkCode() {
       const hintData = await hintResponse.json()
       const hint = hintData.data.hint
       codeCheckMessage.value = `Ответ неверный! Подсказка: ${hint}`
-
-      console.log(hintData)
 
       if (!hintResponse.ok) {
         console.error('Не удалось получить подсказку')
