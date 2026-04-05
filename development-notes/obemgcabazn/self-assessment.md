@@ -5,8 +5,11 @@
    4. **State Manager:** Использование Pinia (auth store) — **10 баллов**
    5. **Vue:** Использование фреймворка Vue — **5 баллов**
    6. **Auto-deploy:** Автоматический деплой через Netlify — **5 баллов**
+   7. **Theme Switcher:** Переключение Light/Dark темы через CSS-переменные и класс на `html` — **10 баллов**
+   8. **Unit Tests (Basic):** Тесты для ProfileView, LoginView, zones (покрытие 20%+) — **10 баллов**
+   9. **Leaderboard:** Таблица рекордов с сохранением результатов — **5 баллов**
 
-   ИТОГО: **70 баллов**
+   ИТОГО: **95 баллов**
 
 ---
 
@@ -58,3 +61,52 @@
    - `feat: add authorization, refresh jwt token, add validation for login/registration page`
    - `feat: add pinia, auth store`
    - `fix: remove store only email in localStorage`
+
+   **Feature 3 — OnlineMiniGame (Complex Component + Real-time)**
+
+   Онлайн мини-игра в реальном времени с использованием WebSocket (socket.io):
+   - Лобби с отображением активных комнат (`room:created`, `room:state`)
+   - Создание и присоединение к комнате по теме
+   - Игровой процесс: вопросы по теме, синхронизация состояния между участниками
+   - Матчмейкинг через socket-события (`room:create`, `room:join`)
+   - Автоматическое обновление токена перед подключением (интеграция с JWT auth)
+   - Таблица рекордов по результатам игр
+
+   Коммиты:
+   - `feat: add list of topics in online-mini-game`
+   - `feat: add RoomVue component`
+   - `feat: add online-mini-game (enter room, game)`
+   - `feat: finished online-mini-game`
+   - `feat: add leaderboard`
+
+   **Feature 4 — Theme Switcher**
+
+   Переключение Light/Dark темы:
+   - Pinia store (`useThemeStore`): `isDark`, `toggle()`, сохранение в `localStorage`
+   - Класс `dark` добавляется на `<html>` (`document.documentElement`)
+   - CSS-переменные в `:root` (светлая) переопределяются в `html.dark` (тёмная)
+   - Кнопка ☀️/🌙 в навигации
+   - Охват: 21 файл (все ключевые компоненты и вьюшки)
+
+   Коммиты:
+   - `feat: add theme switcher`
+
+   **Feature 5 — Unit Tests**
+
+   Тесты с использованием Vitest + Vue Test Utils:
+   - `LoginView.spec.ts` — тесты формы входа и регистрации
+   - `ProfileView.spec.ts` — тесты экрана профиля
+   - `zones.spec.ts` — тесты игровой логики (`allZonesCompleted`, `completedCount`, `progressPercent`)
+
+   Коммиты:
+   - `feat: add tests in __tests__ folder`
+   - `feat(tests): add test to ProfileView, Login`
+
+   **Feature 6 — Rich Text Editor (Quill)**
+
+   Встроенный WYSIWYG-редактор Quill в `aiBlockComponent`:
+   - Позволяет форматировать ответ перед отправкой на проверку
+   - Кастомная стилизация тулбара и контейнера под тему приложения
+
+   Коммиты:
+   - `feat: add Grock checking on codeComponent`
