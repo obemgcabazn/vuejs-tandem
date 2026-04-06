@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, assert } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { setActivePinia, createPinia } from 'pinia'
@@ -133,8 +133,8 @@ describe('ProfileView', () => {
     const wrapper = mount(ProfileView)
     await flushPromises()
     // имя хранится в <input>, .text() его не читает — сужаем тип через instanceof
-    const nameEl = wrapper.find('input.profile__input').element as HTMLInputElement
-    expect(nameEl).toBeInstanceOf(HTMLInputElement)
+    const nameEl = wrapper.find('input.profile__input').element
+    assert(nameEl instanceof HTMLInputElement)
     expect(nameEl.value).toBe('Test User')
     expect(wrapper.text()).toContain('test@example.com')
   })
