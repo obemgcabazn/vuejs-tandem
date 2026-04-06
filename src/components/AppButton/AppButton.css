@@ -7,7 +7,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  background: #f5f0e6;
+  background: var(--bg-card);
   border-radius: 0;
 }
 
@@ -48,19 +48,19 @@
 }
 
 .app-btn--neutral {
-  border-color: #6b5344;
-  color: #3d3229;
-  background: linear-gradient(180deg, #f5f0e6, #e8e2d5);
+  border-color: var(--btn-neutral-border);
+  color: var(--btn-neutral-text);
+  background: linear-gradient(180deg, var(--btn-neutral-from), var(--btn-neutral-to));
 }
 
 .app-btn--neutral:hover:not(:disabled) {
-  background: linear-gradient(180deg, #e8e2d5, #d4cdc0);
+  background: linear-gradient(180deg, var(--btn-neutral-to), var(--btn-neutral-hover));
 }
 
 .app-btn:disabled {
-  background: #e0d9cc;
-  color: #9a8b7a;
-  border-color: #9a8b7a;
+  background: var(--btn-disabled-bg);
+  color: var(--btn-disabled-text);
+  border-color: var(--btn-disabled-border);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;

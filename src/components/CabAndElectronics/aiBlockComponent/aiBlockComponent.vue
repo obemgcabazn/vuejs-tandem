@@ -182,18 +182,12 @@ async function checkAnswer() {
 
     const score = Number(result.score ?? 0)
     const feedback = result.feedback ?? 'Ответ проверен'
-    // const vasilkiCount = result.zoneProgress?.vasilkiCount
-    const errorCount = result.zoneProgress?.errorCount
     if (score > 50) {
       answerCheckSuccess.value = true
       answerCheckMessage.value = feedback
       gameStore.addVasilki()
-      // if (typeof vasilkiCount === 'number') {
-      //   gameStore.setVasilki(vasilkiCount)
-      // }
     } else {
       answerCheckSuccess.value = false
-
       const hintResponse = await postToJudgeForHint({
         taskId: currentTask.value.id,
         currentAnswer: plain,
@@ -206,10 +200,7 @@ async function checkAnswer() {
         answerCheckMessage.value = feedback
       }
 
-      if (typeof errorCount === 'number') {
-        gameStore.setError(errorCount)
-      }
-      emit('incorrectAnswer')
+      incorrectAnswer()
     }
   } catch (error) {
     console.error('Ошибка при проверке ответа:', error)
@@ -218,6 +209,10 @@ async function checkAnswer() {
   } finally {
     isLoading.value = false
   }
+}
+
+function incorrectAnswer() {
+  emit('incorrectAnswer')
 }
 </script>
 

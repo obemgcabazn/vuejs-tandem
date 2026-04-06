@@ -9,10 +9,10 @@
 .mini-game-snake-title {
   margin: 0 0 16px;
   padding-bottom: 8px;
-  color: #3d3229;
+  color: var(--text-secondary);
   font-size: 20px;
   font-weight: 700;
-  border-bottom: 2px solid #8b7355;
+  border-bottom: 2px solid var(--border-heading);
   letter-spacing: 0.02em;
   text-align: center;
 }
@@ -26,14 +26,14 @@
 
 .mini-game-snake-wrapper {
   position: relative;
-  border: 2px solid #8b7355;
+  border: 2px solid var(--border-heading);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .mini-game-snake-canvas {
   display: block;
-  background: #e8e0d5;
+  background: var(--bg-page);
 }
 
 .mini-game-snake-overlay {
@@ -84,19 +84,19 @@
 }
 
 .mini-game-snake-button-close {
-  border-color: #8b7355;
-  color: #3d3229;
-  background: linear-gradient(180deg, #e8e0d5, #d4cabf);
+  border-color: var(--border-heading);
+  color: var(--text-secondary);
+  background: linear-gradient(180deg, var(--btn-neutral-from), var(--btn-neutral-to));
 }
 
 .mini-game-snake-button-close:hover {
-  background: linear-gradient(180deg, #d4cabf, #c4b8a8);
+  background: linear-gradient(180deg, var(--btn-neutral-to), var(--btn-neutral-hover));
 }
 
 .mini-game-snake-controls {
   font-size: 14px;
   font-weight: 400;
-  color: #3d3229;
+  color: var(--text-secondary);
   text-align: center;
   margin: 12px 0 0;
 }

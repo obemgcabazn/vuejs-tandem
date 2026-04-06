@@ -2,11 +2,23 @@
 import { ref, onMounted } from 'vue'
 import type { User } from '@/types'
 import { apiFetch } from '@/utils'
-import { patchUserName, patchUserAvatar } from '@/api/requests'
+import { patchUserName, patchUserAvatar, getLeaderboard } from '@/api/requests'
+import type { LeaderboardPayload } from '@/types/types'
+import { useLocaleStore } from '@/stores/locale'
+
+const locale = useLocaleStore()
 
 type UserStats = Record<string, string | number>
 
-type UserProgress = string[]
+type UserProgress = topicItem[]
+
+type topicItem = {
+  topicId: string
+  topicTitle: string
+  totalTasks: number
+  completedTasks: number
+  percentage: number
+}
 
 const profile = ref<User | null>(null)
 const stats = ref<UserStats | null>(null)
@@ -14,6 +26,9 @@ const progress = ref<UserProgress | null>(null)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+const leaderboard = ref<LeaderboardPayload[] | null>(null)
+const leaderboardError = ref<string | null>(null)
 
 const isEditingName = ref(false)
 const editedName = ref('')
@@ -49,10 +64,17 @@ onMounted(async () => {
     editedAvatarUrl.value = profileData.avatarUrl ?? ''
     stats.value = statsData
     progress.value = progressData
+    console.log(progress.value)
   } catch {
-    error.value = 'Не удалось загрузить данные профиля'
+    error.value = locale.t.profile.errorProfile
   } finally {
     loading.value = false
+  }
+
+  try {
+    leaderboard.value = await getLeaderboard()
+  } catch {
+    leaderboardError.value = locale.t.profile.errorLeaderboard
   }
 })
 
@@ -82,7 +104,7 @@ async function removeAvatar() {
     if (profile.value) profile.value = { ...profile.value, ...updated, avatarUrl: undefined }
     avatarImgError.value = false
   } catch {
-    avatarError.value = 'Не удалось удалить аватар'
+    avatarError.value = locale.t.profile.errorRemoveAvatar
   } finally {
     savingAvatar.value = false
   }
@@ -103,7 +125,7 @@ async function confirmEditAvatar() {
     avatarImgError.value = false
     isEditingAvatar.value = false
   } catch {
-    avatarError.value = 'Не удалось сохранить аватар'
+    avatarError.value = locale.t.profile.errorSaveAvatar
   } finally {
     savingAvatar.value = false
   }
@@ -122,7 +144,7 @@ async function confirmEdit() {
     if (profile.value) profile.value = { ...profile.value, ...updated }
     isEditingName.value = false
   } catch {
-    nameError.value = 'Не удалось сохранить имя'
+    nameError.value = locale.t.profile.errorSaveName
   } finally {
     savingName.value = false
   }
@@ -131,16 +153,16 @@ async function confirmEdit() {
 
 <template>
   <main class="profile">
-    <h1 class="profile__title">Profile</h1>
+    <h1 class="profile__title">{{ locale.t.profile.title }}</h1>
 
-    <p v-if="loading" class="profile__loading">Loading...</p>
+    <p v-if="loading" class="profile__loading">{{ locale.t.profile.loading }}</p>
 
     <p v-else-if="error" class="profile__error">{{ error }}</p>
 
     <div v-else class="profile__columns">
       <!-- Info -->
       <section class="profile__section">
-        <h2 class="profile__section-title">Info</h2>
+        <h2 class="profile__section-title">{{ locale.t.profile.sectionInfo }}</h2>
         <template v-if="profile">
           <!-- Avatar -->
           <div class="profile__avatar-wrap">
@@ -148,7 +170,7 @@ async function confirmEdit() {
               <img
                 v-if="profile.avatarUrl && !avatarImgError"
                 :src="profile.avatarUrl"
-                :alt="profile.name ?? 'Avatar'"
+                :alt="profile.name ?? locale.t.profile.avatarAlt"
                 class="profile__avatar-img"
                 @error="avatarImgError = true"
               />
@@ -158,7 +180,7 @@ async function confirmEdit() {
               <button
                 class="profile__avatar-edit-btn profile__avatar-edit-btn--edit"
                 :disabled="savingAvatar"
-                title="Change avatar"
+                :title="locale.t.profile.changeAvatar"
                 @click="startEditAvatar"
               >
                 <svg
@@ -180,7 +202,7 @@ async function confirmEdit() {
                 v-if="profile.avatarUrl && !isEditingAvatar"
                 class="profile__avatar-edit-btn profile__avatar-edit-btn--delete"
                 :disabled="savingAvatar"
-                title="Remove avatar"
+                :title="locale.t.profile.removeAvatar"
                 @click="removeAvatar"
               >
                 <svg
@@ -207,7 +229,7 @@ async function confirmEdit() {
               <input
                 v-model="editedAvatarUrl"
                 class="profile__input"
-                placeholder="https://..."
+                :placeholder="locale.t.profile.avatarPlaceholder"
                 :disabled="savingAvatar"
                 @keyup.enter="confirmEditAvatar"
                 @keyup.esc="cancelEditAvatar"
@@ -216,7 +238,7 @@ async function confirmEdit() {
                 <button
                   class="profile__icon-btn"
                   :disabled="savingAvatar"
-                  title="Save"
+                  :title="locale.t.profile.save"
                   @click="confirmEditAvatar"
                 >
                   <svg
@@ -236,7 +258,7 @@ async function confirmEdit() {
                 <button
                   class="profile__icon-btn"
                   :disabled="savingAvatar"
-                  title="Cancel"
+                  :title="locale.t.profile.cancel"
                   @click="cancelEditAvatar"
                 >
                   <svg
@@ -261,7 +283,7 @@ async function confirmEdit() {
 
           <!-- Editable name field -->
           <div v-if="profile.name !== undefined" class="profile__field">
-            <span class="profile__label">Username</span>
+            <span class="profile__label">{{ locale.t.profile.labelUsername }}</span>
             <div class="profile__editable">
               <input
                 v-model="editedName"
@@ -273,7 +295,7 @@ async function confirmEdit() {
               <button
                 class="profile__icon-btn"
                 :disabled="savingName"
-                :title="isEditingName ? 'Save' : 'Edit'"
+                :title="isEditingName ? locale.t.profile.save : locale.t.profile.edit"
                 @click="isEditingName ? confirmEdit() : startEdit()"
               >
                 <!-- Checkmark -->
@@ -313,19 +335,19 @@ async function confirmEdit() {
           </div>
 
           <div class="profile__field">
-            <span class="profile__label">Email</span>
+            <span class="profile__label">{{ locale.t.profile.labelEmail }}</span>
             <span class="profile__value">{{ profile.email }}</span>
           </div>
           <div v-if="profile.role" class="profile__field">
-            <span class="profile__label">Role</span>
+            <span class="profile__label">{{ locale.t.profile.labelRole }}</span>
             <span class="profile__value">{{ profile.role }}</span>
           </div>
           <div v-if="profile.id" class="profile__field">
-            <span class="profile__label">ID</span>
+            <span class="profile__label">{{ locale.t.profile.labelId }}</span>
             <span class="profile__value">{{ profile.id }}</span>
           </div>
           <div v-if="profile.createdAt" class="profile__field">
-            <span class="profile__label">Registration Date</span>
+            <span class="profile__label">{{ locale.t.profile.labelRegDate }}</span>
             <span class="profile__value">{{
               new Date(profile.createdAt).toLocaleDateString('ru-RU')
             }}</span>
@@ -335,10 +357,12 @@ async function confirmEdit() {
 
       <!-- Stats -->
       <section class="profile__section">
-        <h2 class="profile__section-title">Statistics</h2>
+        <h2 class="profile__section-title">{{ locale.t.profile.sectionStats }}</h2>
         <template v-if="stats">
           <div v-for="(value, key) in stats" :key="key" class="profile__field">
-            <span class="profile__label">{{ key }}</span>
+            <span class="profile__label">
+              {{ locale.t.statsLabels[key as keyof typeof locale.t.statsLabels] ?? key }}
+            </span>
             <span class="profile__value">{{ value }}</span>
           </div>
         </template>
@@ -346,10 +370,55 @@ async function confirmEdit() {
 
       <!-- Progress -->
       <section class="profile__section">
-        <h2 class="profile__section-title">Progress</h2>
-        <span class="profile__value">{{ progress != null ? progress.length / 4 : 0 }} %</span>
+        <h2 class="profile__section-title">{{ locale.t.profile.sectionProgress }}</h2>
+        <template v-if="progress">
+          <div v-for="item in progress" :key="item.topicId" class="profile__progress-item">
+            <div class="profile__progress-header">
+              <span class="profile__label">{{ item.topicTitle }}</span>
+              <span class="profile__progress-fraction"
+                >{{ item.completedTasks }} / {{ item.totalTasks }}</span
+              >
+            </div>
+            <div class="profile__progress-bar">
+              <div class="profile__progress-fill" :style="{ width: item.percentage + '%' }" />
+            </div>
+            <span class="profile__progress-percent">{{ item.percentage }}%</span>
+          </div>
+        </template>
       </section>
     </div>
+
+    <!-- Leaderboard -->
+    <section class="profile__leaderboard">
+      <h2 class="profile__section-title">{{ locale.t.profile.sectionLeaderboard }}</h2>
+      <p v-if="leaderboardError" class="profile__error">{{ leaderboardError }}</p>
+      <table v-else-if="leaderboard && leaderboard.length" class="profile__lb-table">
+        <thead>
+          <tr>
+            <th class="profile__lb-th profile__lb-th--rank">{{ locale.t.profile.lbRank }}</th>
+            <th class="profile__lb-th">{{ locale.t.profile.lbPlayer }}</th>
+            <th class="profile__lb-th profile__lb-th--num">{{ locale.t.profile.lbPoints }}</th>
+            <th class="profile__lb-th profile__lb-th--num">{{ locale.t.profile.lbDate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(entry, index) in leaderboard"
+            :key="entry.id"
+            class="profile__lb-row"
+            :class="{ 'profile__lb-row--me': entry.userId === profile?.id }"
+          >
+            <td class="profile__lb-td profile__lb-td--rank">{{ index + 1 }}</td>
+            <td class="profile__lb-td">{{ entry.userEmail }}</td>
+            <td class="profile__lb-td profile__lb-td--num">{{ entry.points }}</td>
+            <td class="profile__lb-td profile__lb-td--num">
+              {{ new Date(entry.gameDate).toLocaleDateString('ru-RU') }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else-if="leaderboard" class="profile__loading">{{ locale.t.profile.lbEmpty }}</p>
+    </section>
   </main>
 </template>
 
@@ -358,6 +427,7 @@ async function confirmEdit() {
   max-width: 1100px;
   margin: 2rem auto;
   padding: 0 1rem;
+  color: var(--text-primary);
 }
 
 .profile__title {
@@ -388,7 +458,8 @@ async function confirmEdit() {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  border: 1px solid rgba(107, 83, 68, 0.35);
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
   border-radius: 8px;
   padding: 1.5rem;
 }
@@ -396,6 +467,7 @@ async function confirmEdit() {
 .profile__section-title {
   font-size: 1rem;
   font-weight: 600;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
@@ -407,13 +479,14 @@ async function confirmEdit() {
 
 .profile__label {
   font-size: 0.75rem;
-  opacity: 0.6;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .profile__value {
   font-size: 1rem;
+  color: var(--text-primary);
 }
 
 .profile__editable {
@@ -429,13 +502,13 @@ async function confirmEdit() {
   border: none;
   border-bottom: 1px solid transparent;
   padding: 0.1rem 0;
-  color: inherit;
+  color: var(--text-primary);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .profile__input:not(:disabled) {
-  border-bottom-color: rgba(107, 83, 68, 0.5);
+  border-bottom-color: var(--border-primary);
 }
 
 .profile__input:disabled {
@@ -451,8 +524,8 @@ async function confirmEdit() {
   border: none;
   cursor: pointer;
   padding: 0.2rem;
-  color: inherit;
-  opacity: 0.5;
+  color: var(--text-muted);
+  opacity: 0.7;
   transition: opacity 0.2s;
   flex-shrink: 0;
 }
@@ -494,7 +567,7 @@ async function confirmEdit() {
   border-radius: 50%;
   object-fit: cover;
   display: block;
-  border: 2px solid rgba(107, 83, 68, 0.35);
+  border: 2px solid var(--border-secondary);
 }
 
 .profile__avatar-initials {
@@ -504,11 +577,12 @@ async function confirmEdit() {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(107, 83, 68, 0.15);
-  border: 2px solid rgba(107, 83, 68, 0.35);
+  background: var(--bg-stat);
+  border: 2px solid var(--border-secondary);
   font-size: 2rem;
   font-weight: 600;
   text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .profile__avatar-edit-btn {
@@ -517,7 +591,7 @@ async function confirmEdit() {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(107, 83, 68, 0.7);
+  background: var(--border-primary);
   border: none;
   cursor: pointer;
   display: flex;
@@ -552,5 +626,93 @@ async function confirmEdit() {
 .profile__avatar-actions {
   display: flex;
   gap: 0.25rem;
+}
+
+.profile__progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.profile__progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.profile__progress-fraction {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.profile__progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-progress);
+  overflow: hidden;
+}
+
+.profile__progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--progress-fill);
+  transition: width 0.3s ease;
+}
+
+.profile__progress-percent {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  align-self: flex-end;
+}
+
+.profile__leaderboard {
+  margin-top: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.profile__lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.profile__lb-th {
+  text-align: left;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.profile__lb-th--rank,
+.profile__lb-td--rank {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.profile__lb-th--num,
+.profile__lb-td--num {
+  text-align: right;
+}
+
+.profile__lb-td {
+  padding: 0.5rem 0.75rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.profile__lb-row--me {
+  background: var(--bg-stat);
+  font-weight: 600;
+}
+
+.profile__lb-row:last-child .profile__lb-td {
+  border-bottom: none;
 }
 </style>

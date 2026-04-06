@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
 
 const auth = useAuthStore()
 const router = useRouter()
+const theme = useThemeStore()
+const locale = useLocaleStore()
 
 async function logout() {
   await auth.logout()
@@ -16,12 +20,32 @@ async function logout() {
     <div class="nav-inner">
       <RouterLink to="/" class="nav-brand">БелАЗ Танdem</RouterLink>
       <nav class="nav-links">
-        <RouterLink to="/" class="nav-link">Игра</RouterLink>
-        <RouterLink to="/online-mini-game" class="nav-link">Онлайн мини-игра</RouterLink>
-        <RouterLink to="/about" class="nav-link">О проекте</RouterLink>
-        <RouterLink v-if="auth.isAuthenticated" to="/profile" class="nav-link">Профиль</RouterLink>
-        <button v-if="auth.isAuthenticated" class="nav-logout" @click="logout">Выйти</button>
-        <RouterLink v-else to="/login" class="nav-login">Войти</RouterLink>
+        <RouterLink to="/" class="nav-link">{{ locale.t.nav.game }}</RouterLink>
+        <RouterLink to="/online-mini-game" class="nav-link">{{
+          locale.t.nav.onlineGame
+        }}</RouterLink>
+        <RouterLink to="/about" class="nav-link">{{ locale.t.nav.about }}</RouterLink>
+        <RouterLink v-if="auth.isAuthenticated" to="/profile" class="nav-link">{{
+          locale.t.nav.profile
+        }}</RouterLink>
+        <button v-if="auth.isAuthenticated" class="nav-logout" @click="logout">
+          {{ locale.t.nav.logout }}
+        </button>
+        <RouterLink v-else to="/login" class="nav-login">{{ locale.t.nav.login }}</RouterLink>
+        <button
+          class="nav-theme-toggle"
+          @click="theme.toggle"
+          :title="theme.isDark ? 'Светлая тема' : 'Тёмная тема'"
+        >
+          {{ theme.isDark ? '☀️' : '🌙' }}
+        </button>
+        <button
+          class="nav-lang-toggle"
+          @click="locale.toggle"
+          :title="locale.lang === 'ru' ? 'Switch to English' : 'Переключить на русский'"
+        >
+          {{ locale.lang === 'ru' ? 'EN' : 'RU' }}
+        </button>
       </nav>
     </div>
   </header>
@@ -36,9 +60,9 @@ async function logout() {
   left: 0;
   right: 0;
   z-index: 200;
-  background: rgba(26, 22, 18, 0.92);
+  background: var(--nav-bg);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(107, 83, 68, 0.4);
+  border-bottom: 1px solid var(--nav-border);
 }
 
 .nav-inner {
@@ -55,7 +79,7 @@ async function logout() {
 .nav-brand {
   font-size: 16px;
   font-weight: 700;
-  color: #f0e8dc;
+  color: var(--nav-text);
   text-decoration: none;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -76,7 +100,7 @@ async function logout() {
   padding: 6px 14px;
   font-size: 14px;
   font-weight: 500;
-  color: #b8a898;
+  color: var(--nav-text-muted);
   text-decoration: none;
   border-radius: 4px;
   transition:
@@ -85,13 +109,13 @@ async function logout() {
 }
 
 .nav-link:hover {
-  color: #f0e8dc;
-  background: rgba(107, 83, 68, 0.3);
+  color: var(--nav-text);
+  background: var(--nav-hover-bg);
 }
 
 .nav-link.router-link-exact-active {
-  color: #f0e8dc;
-  background: rgba(107, 83, 68, 0.45);
+  color: var(--nav-text);
+  background: var(--nav-active-bg);
 }
 
 .nav-logout,
@@ -110,23 +134,52 @@ async function logout() {
 
 .nav-logout {
   background: transparent;
-  border: 1px solid rgba(107, 83, 68, 0.6);
-  color: #b8a898;
+  border: 1px solid var(--nav-border);
+  color: var(--nav-text-muted);
 }
 
 .nav-logout:hover {
-  background: rgba(107, 83, 68, 0.3);
-  color: #f0e8dc;
-  border-color: rgba(107, 83, 68, 0.9);
+  background: var(--nav-hover-bg);
+  color: var(--nav-text);
+  border-color: var(--nav-login-bg);
 }
 
 .nav-login {
-  background: #6b5344;
+  background: var(--nav-login-bg);
   border: 1px solid transparent;
-  color: #f0e8dc;
+  color: var(--nav-text);
 }
 
 .nav-login:hover {
-  background: #8b7355;
+  background: var(--nav-login-hover);
+}
+
+.nav-theme-toggle,
+.nav-lang-toggle {
+  margin-left: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--nav-border);
+  border-radius: 4px;
+  color: var(--nav-text-muted);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.nav-theme-toggle {
+  font-size: 16px;
+}
+
+.nav-theme-toggle:hover,
+.nav-lang-toggle:hover {
+  background: var(--nav-hover-bg);
+  border-color: var(--nav-login-bg);
+  color: var(--nav-text);
 }
 </style>

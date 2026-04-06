@@ -3,12 +3,12 @@
   padding: 12px 24px;
   text-align: center;
   font-size: 13px;
-  color: #e5e5e5;
+  color: var(--text-footer);
   background: transparent;
 }
 
 .page-footer-text {
   text-shadow:
-    0 0 2px rgba(255, 255, 255, 1),
-    0 0 4px rgba(255, 255, 255, 0.9)
+    0 0 2px rgba(255, 255, 255, 0.6),
+    0 0 4px rgba(255, 255, 255, 0.4);
 }

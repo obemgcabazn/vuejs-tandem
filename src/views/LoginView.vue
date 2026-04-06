@@ -5,6 +5,9 @@ import { useAuthStore } from '@/stores/auth'
 import { validateName, validatePassword } from '@/utils/loginValidator'
 import AppInput from '@/components/AppInput/AppInput.vue'
 import AppButton from '@/components/AppButton/AppButton.vue'
+import { useLocaleStore } from '@/stores/locale'
+
+const locale = useLocaleStore()
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -66,11 +69,11 @@ function switchMode() {
 <template>
   <div class="container">
     <div class="login-layout">
-      <h1>{{ mode === 'login' ? 'Вход' : 'Регистрация' }}</h1>
+      <h1>{{ mode === 'login' ? locale.t.login.titleLogin : locale.t.login.titleRegister }}</h1>
       <AppInput
         v-if="mode === 'register'"
         v-model="name"
-        label="Name"
+        :label="locale.t.login.labelName"
         type="text"
         id="name"
         :error="nameError"
@@ -78,7 +81,7 @@ function switchMode() {
       />
       <AppInput
         v-model="email"
-        label="Email"
+        :label="locale.t.login.labelEmail"
         type="email"
         id="email"
         :error="emailError"
@@ -86,7 +89,7 @@ function switchMode() {
       />
       <AppInput
         v-model="password"
-        label="Пароль"
+        :label="locale.t.login.labelPassword"
         type="password"
         id="password"
         :error="passwordError"
@@ -94,10 +97,10 @@ function switchMode() {
       />
       <p v-if="auth.error" class="error-text">{{ auth.error }}</p>
       <AppButton variant="start" :disabled="auth.loading" @click="submit">
-        {{ mode === 'login' ? 'Войти' : 'Зарегистрироваться' }}
+        {{ mode === 'login' ? locale.t.login.submitLogin : locale.t.login.submitRegister }}
       </AppButton>
       <AppButton variant="neutral" @click="switchMode">
-        {{ mode === 'login' ? 'Создать аккаунт' : 'Уже есть аккаунт' }}
+        {{ mode === 'login' ? locale.t.login.switchToRegister : locale.t.login.switchToLogin }}
       </AppButton>
     </div>
   </div>
