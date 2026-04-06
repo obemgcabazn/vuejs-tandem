@@ -4,17 +4,18 @@ https://belaz-factory.netlify.app/
 
 ### Team members:
 
-| Name | Github Account | Development Notes |
-|---|---|---|
-| Aleksandr Khokhryakov | [@obemgcabazn](https://github.com/obemgcabazn) | [diary](development-notes/obemgcabazn) |
-| Dzmitry Lehankou | [@asindeton](https://github.com/asindeton) | |
-| Olga Ivanova | [@cat5671](https://github.com/cat5671) | [diary](development-notes/Cat5671) |
-| Kiryl Lukashchuk | [@kirrbrest](https://github.com/kirrbrest) | [diary](development-notes/KirrBrest) |
-| Maksim Dauhanosav | [@maksimdolgonosov](https://github.com/maksimdolgonosov) | [diary](development-notes/MaksimDolgonosov) |
-| Andrei Zaretski | [@andreizaretski](https://github.com/andreizaretski) | |
+| Name | Github Account                                           | Diary
+|---|----------------------------------------------------------|----------------------------------------------------------|
+| Aleksandr Khokhryakov | [@obemgcabazn](https://github.com/obemgcabazn)           | [Diary](https://github.com/obemgcabazn/vuejs-tandem/tree/main/development-notes/obemgcabazn)
+| Dzmitry Lehankou | [@asindeton](https://github.com/asindeton)               | Mentor
+| Olga Ivanova | [@cat5671](https://github.com/cat5671)                   | [Diary](https://github.com/obemgcabazn/vuejs-tandem/tree/main/development-notes/Cat5671)
+| Kiryl Lukashchuk | [@kirrbrest](https://github.com/kirrbrest)               | [Diary](https://github.com/obemgcabazn/vuejs-tandem/tree/main/development-notes/KirrBrest)
+| Maksim Dauhanosav | [@maksimdolgonosov](https://github.com/maksimdolgonosov) | [Diary](https://github.com/obemgcabazn/vuejs-tandem/tree/main/development-notes/MaksimDolgonosov)
+| Andrei Zaretski | [@andreizaretski](https://github.com/andreizaretski)     | Mentor
 
 
 ### Project desription
+[Демо-видео проекта](https://youtu.be/eiMAUFSEHTc)
 
 ##### **JavaScript & Algorithms Practice Trainer**
 
