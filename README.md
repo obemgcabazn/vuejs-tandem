@@ -4,14 +4,14 @@ https://belaz-factory.netlify.app/
 
 ### Team members:
 
-| Name | Github Account                                           |
-|---|----------------------------------------------------------|
-| Aleksandr Khokhryakov | [@obemgcabazn](https://github.com/obemgcabazn)           |
-| Dzmitry Lehankou | [@asindeton](https://github.com/asindeton)               |
-| Olga Ivanova | [@cat5671](https://github.com/cat5671)                   |
-| Kiryl Lukashchuk | [@kirrbrest](https://github.com/kirrbrest)               |
-| Maksim Dauhanosav | [@maksimdolgonosov](https://github.com/maksimdolgonosov) |
-| Andrei Zaretski | [@andreizaretski](https://github.com/andreizaretski)     |
+| Name | Github Account | Development Notes |
+|---|---|---|
+| Aleksandr Khokhryakov | [@obemgcabazn](https://github.com/obemgcabazn) | [diary](development-notes/obemgcabazn) |
+| Dzmitry Lehankou | [@asindeton](https://github.com/asindeton) | |
+| Olga Ivanova | [@cat5671](https://github.com/cat5671) | [diary](development-notes/Cat5671) |
+| Kiryl Lukashchuk | [@kirrbrest](https://github.com/kirrbrest) | [diary](development-notes/KirrBrest) |
+| Maksim Dauhanosav | [@maksimdolgonosov](https://github.com/maksimdolgonosov) | [diary](development-notes/MaksimDolgonosov) |
+| Andrei Zaretski | [@andreizaretski](https://github.com/andreizaretski) | |
 
 
 ### Project desription
