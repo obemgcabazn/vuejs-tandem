@@ -133,11 +133,9 @@ describe('ProfileView', () => {
     const wrapper = mount(ProfileView)
     await flushPromises()
     // имя хранится в <input>, .text() его не читает — сужаем тип через instanceof
-    const nameEl = wrapper.find('input.profile__input').element
+    const nameEl = wrapper.find('input.profile__input').element as HTMLInputElement
     expect(nameEl).toBeInstanceOf(HTMLInputElement)
-    if (nameEl instanceof HTMLInputElement) {
-      expect(nameEl.value).toBe('Test User')
-    }
+    expect(nameEl.value).toBe('Test User')
     expect(wrapper.text()).toContain('test@example.com')
   })
 
