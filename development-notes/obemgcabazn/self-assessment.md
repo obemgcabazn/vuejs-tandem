@@ -84,3 +84,4 @@
     - `feat: add tests in __tests__ folder`
     - `feat(tests): add test to ProfileView, Login`
 
+Link to Pull Request: https://github.com/obemgcabazn/vuejs-tandem/pull/63
